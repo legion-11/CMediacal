@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "963894990309",
+    "project_id": "cmediacal",
+    "storage_bucket": "cmediacal.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:963894990309:android:85b2f4c2304055da2acb0c",
+        "android_client_info": {
+          "package_name": "com.dmytroandriichuk.cmediacal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "963894990309-s4qlj1me218unnj8ml1csn8scsj2olfv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClMKhhtLD3lSgWaSKjUL9U0I8h0etQe2Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "963894990309-s4qlj1me218unnj8ml1csn8scsj2olfv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

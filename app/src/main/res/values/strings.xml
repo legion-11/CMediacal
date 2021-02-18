@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">CMediacal</string>
+
+    <string name="full_name">Full Name</string>
+    <string name="email">Email</string>
+    <string name="save">Save</string>
+    <string name="sign_in">Sign In</string>
+    <string name="forgot_password">Forgot Password</string>
+    <string name="register">Register</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="enter_email">Enter Email</string>
+    <string name="flat_number">Flat Number</string>
+    <string name="back">Back</string>
+    <string name="confirm">Confirm</string>
+    <string name="title_activity_landing">MainActivity</string>
+    <string name="title_home">Search</string>
+    <string name="title_dashboard">Add Expense</string>
+    <string name="title_notifications">Favourites</string>
+    <string name="confirm_password">Confirm Password</string>
+</resources>
