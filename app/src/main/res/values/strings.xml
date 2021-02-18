@@ -17,4 +17,5 @@
     <string name="title_dashboard">Add Expense</string>
     <string name="title_notifications">Favourites</string>
     <string name="confirm_password">Confirm Password</string>
+    <string name="search_options">Search options</string>
 </resources>

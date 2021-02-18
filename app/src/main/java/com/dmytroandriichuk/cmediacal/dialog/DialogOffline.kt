@@ -1,13 +1,11 @@
-package com.dmytroandriichuk.cmediacal.dialogs
+package com.dmytroandriichuk.cmediacal.dialog
 
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import androidx.annotation.NonNull
 import androidx.fragment.app.DialogFragment
-import com.dmytroandriichuk.cmediacal.MainActivity
 import java.lang.ClassCastException
 
 //message about errors and allowing to check orders from local db
