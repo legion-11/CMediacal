@@ -12,12 +12,12 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import com.dmytroandriichuk.cmediacal.dialog.DialogOffline
+import com.dmytroandriichuk.cmediacal.dialog.OfflineDialog
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 
 //screen for log in
-class MainActivity : AppCompatActivity(), DialogOffline.DialogOfflineListener {
+class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
     private lateinit var mAuth: FirebaseAuth
 
     private lateinit var emailET: EditText
@@ -126,7 +126,7 @@ class MainActivity : AppCompatActivity(), DialogOffline.DialogOfflineListener {
 
     //show error message
     private fun buildDialog(message: String){
-        val dialog = DialogOffline(message)
+        val dialog = OfflineDialog(message)
         val manager: FragmentManager = supportFragmentManager
         val transaction: FragmentTransaction = manager.beginTransaction()
         dialog.show(transaction, "dialog")

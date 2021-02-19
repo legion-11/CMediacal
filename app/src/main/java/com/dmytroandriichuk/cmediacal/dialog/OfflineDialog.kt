@@ -9,9 +9,9 @@ import androidx.fragment.app.DialogFragment
 import java.lang.ClassCastException
 
 //message about errors and allowing to check orders from local db
-class DialogOffline(private val message: String): DialogFragment() {
+class OfflineDialog(private val message: String): DialogFragment() {
 
-    private lateinit var listener: DialogOfflineListener
+    private lateinit var dialogListener: OfflineDialogListener
 
     @NonNull
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -26,17 +26,17 @@ class DialogOffline(private val message: String): DialogFragment() {
             when (message) {
                 "Account is not verified" -> {
                     builder.setNegativeButton("Send Verification Letter") { _, _ ->
-                        listener.sendVerificationLetter()
+                        dialogListener.sendVerificationLetter()
                     }
                 }
                 "Connection error" -> {
                     builder.setNegativeButton("Go offline") { _, _ ->
-                        listener.goOfflineClicked()
+                        dialogListener.goOfflineClicked()
                     }
                 }
                 else -> {
                     builder.setNegativeButton("Sign Up") { _, _ ->
-                        listener.goToRegisterActivity()
+                        dialogListener.goToRegisterActivity()
                     }
                 }
             }
@@ -48,13 +48,13 @@ class DialogOffline(private val message: String): DialogFragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
-            listener = context as DialogOfflineListener
+            dialogListener = context as OfflineDialogListener
         } catch (e: ClassCastException) {
             throw ClassCastException("$context does not implement DialogOfflineListener")
         }
     }
 
-    interface DialogOfflineListener {
+    interface OfflineDialogListener {
         fun goOfflineClicked()
         fun sendVerificationLetter()
         fun goToRegisterActivity()

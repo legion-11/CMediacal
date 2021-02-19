@@ -10,10 +10,14 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.dmytroandriichuk.cmediacal.LandingActivity
 import com.dmytroandriichuk.cmediacal.R
+import com.dmytroandriichuk.cmediacal.dialog.OfflineDialog
+import com.dmytroandriichuk.cmediacal.ui.search.dialog.FilterListDialog
 import com.google.firebase.auth.FirebaseAuth
 
 class SearchFragment : Fragment() {
@@ -54,15 +58,17 @@ class SearchFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.filter_list -> {
             // User chose the "Settings" item, show the app settings UI...
-            Log.i("OrderActivity", "onOptionsItemSelected: Settings")
-
+            Log.i("SearchFragment", "onOptionsItemSelected: filter dialog")
+            val dialog = FilterListDialog()
+            val manager: FragmentManager = (activity as LandingActivity).supportFragmentManager
+            val transaction: FragmentTransaction = manager.beginTransaction()
+            dialog.show(transaction, "filter dialog")
             true
         }
 
-
         android.R.id.home -> {
             // User chose the "Log Out" action
-            Log.i("OrderActivity", "onOptionsItemSelected: Home")
+            Log.i("SearchFragment", "onOptionsItemSelected: Home")
             FirebaseAuth.getInstance().signOut()
             (activity as LandingActivity).finish()
             true
