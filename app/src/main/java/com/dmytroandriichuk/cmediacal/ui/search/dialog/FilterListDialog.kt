@@ -13,7 +13,7 @@ import com.dmytroandriichuk.cmediacal.R
 import com.dmytroandriichuk.cmediacal.ui.search.dialog.dataClasses.FilterListParentItem
 import com.google.protobuf.Empty
 
-class FilterListDialog: AppCompatDialogFragment(){
+class FilterListDialog(private val listener: FilterListAdapter.ChipClickListener): AppCompatDialogFragment(){
 
     private lateinit var recyclerView: RecyclerView
 
@@ -31,12 +31,6 @@ class FilterListDialog: AppCompatDialogFragment(){
 
             recyclerView = view as RecyclerView
             recyclerView.layoutManager = LinearLayoutManager(activity)
-            recyclerView.addItemDecoration(
-                    DividerItemDecoration(
-                            recyclerView.context,
-                            DividerItemDecoration.VERTICAL
-                    )
-            )
             val titles: Array<String> = resources.getStringArray(R.array.filter_titles)
             val filterResources: TypedArray = resources.obtainTypedArray(R.array.filters_resources)
             val filterItems = List(titles.size) { i ->
@@ -44,7 +38,7 @@ class FilterListDialog: AppCompatDialogFragment(){
                 FilterListParentItem(titles[i], resources.getStringArray(arrayId).toList())
             }
             filterResources.recycle()
-            recyclerView.adapter = FilterListAdapter(filterItems, recyclerView.context)
+            recyclerView.adapter = FilterListAdapter(filterItems, recyclerView.context, listener)
 
             builder.create()
         } ?: throw IllegalStateException("Activity cannot be null")

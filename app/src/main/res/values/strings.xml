@@ -18,6 +18,7 @@
     <string name="title_notifications">Favourites</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="search_options">Search options</string>
+    <string name="logo">logo</string>
 
     <string-array name="filter_titles">
         <item>Filters1</item>

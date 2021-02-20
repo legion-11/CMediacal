@@ -13,12 +13,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.dmytroandriichuk.cmediacal.dialog.OfflineDialog
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.SignInButton
+import com.google.android.gms.common.api.ApiException
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 
 //screen for log in
 class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
     private lateinit var mAuth: FirebaseAuth
+    private lateinit var googleSignInClient: GoogleSignInClient
 
     private lateinit var emailET: EditText
     private lateinit var passwordET: EditText
@@ -30,7 +37,45 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         mAuth = FirebaseAuth.getInstance()
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build()
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
 
+
+        emailET = findViewById(R.id.emailET)
+        passwordET = findViewById(R.id.passwordET)
+        progressBar = findViewById(R.id.log_in_progress_bar)
+
+        val sharedPreferences = getSharedPreferences("user default", Context.MODE_PRIVATE)
+        emailET.setText(sharedPreferences.getString("Email", ""))
+
+        emailLayout = findViewById(R.id.emailLayout)
+        passwordLayout = findViewById(R.id.passwordLayout)
+        val signInButton = findViewById<Button>(R.id.sign_in_with_email_button)
+        signInButton.setOnClickListener {
+            signInWithEmail()
+        }
+
+        val forgetPasswordButton = findViewById<TextView>(R.id.forget_password_TV)
+        forgetPasswordButton.setOnClickListener {
+            goToRestorePasswordActivity()
+        }
+
+        val registerButton = findViewById<TextView>(R.id.registration_TV)
+        registerButton.setOnClickListener {
+            goToRegisterActivity()
+        }
+
+        val logInWithGoogle = findViewById<SignInButton>(R.id.sign_in_with_google_button)
+        logInWithGoogle.setOnClickListener {
+            signInWithGoogle()
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
         if (mAuth.currentUser != null) {
             Log.i("auth", "onStart: registered")
             intent = Intent(this@MainActivity, LandingActivity::class.java)
@@ -39,33 +84,10 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
             Log.i("auth", "onStart: not registered")
         }
 
-        emailET = findViewById(R.id.emailET)
-        passwordET = findViewById(R.id.passwordET)
-        progressBar = findViewById(R.id.logInProgressBar)
-
-        val sharedPreferences = getSharedPreferences("user default", Context.MODE_PRIVATE)
-        emailET.setText(sharedPreferences.getString("Email", ""))
-
-        emailLayout = findViewById(R.id.emailLayout)
-        passwordLayout = findViewById(R.id.passwordLayout)
-        val signInButton = findViewById<Button>(R.id.SignInButton)
-        signInButton.setOnClickListener {
-            userLogIn()
-        }
-
-        val forgetPasswordButton = findViewById<TextView>(R.id.forgetPasswordTV)
-        forgetPasswordButton.setOnClickListener {
-            goToRestorePasswordActivity()
-        }
-
-        val registerButton = findViewById<TextView>(R.id.registertTV)
-        registerButton.setOnClickListener {
-            goToRegisterActivity()
-        }
     }
 
     //check input and create user
-    private fun userLogIn() {
+    private fun signInWithEmail() {
         val email = emailET.text.toString().trim()
         val password = passwordET.text.toString().trim()
 
@@ -124,6 +146,48 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
         }
     }
 
+    private fun signInWithGoogle() {
+        val signInIntent = googleSignInClient.signInIntent
+        startActivityForResult(signInIntent, RC_SIGN_IN)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            if (task.isSuccessful) {
+                try {
+                    // Google Sign In was successful, authenticate with Firebase
+                    val account = task.getResult(ApiException::class.java)!!
+                    Log.d("MainActivity", "firebaseAuthWithGoogle:" + account.id)
+                    firebaseAuthWithGoogle(account.idToken!!)
+                } catch (e: ApiException) {
+                    // Google Sign In failed, update UI appropriately
+                    Log.w("MainActivity", "Google sign in failed", e)
+                    // ...
+                }
+            } else { Log.w("MainActivity", task.exception) }
+        }
+    }
+
+    private fun firebaseAuthWithGoogle(idToken: String) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        Log.d("MainActivity", "signInWithCredential:success")
+                        intent = Intent(this@MainActivity, LandingActivity::class.java)
+                        startActivity(intent)
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w("MainActivity", "signInWithCredential:failure", task.exception)
+                        buildDialog("Connection error")
+                    }
+                }
+    }
+
     //show error message
     private fun buildDialog(message: String){
         val dialog = OfflineDialog(message)
@@ -175,6 +239,10 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
         }
         Log.i("Internet", "No network")
         return false
+    }
+
+    companion object {
+        val RC_SIGN_IN = 111
     }
 }
 

@@ -1,26 +1,23 @@
 package com.dmytroandriichuk.cmediacal.ui.search
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.SearchView
-import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.dmytroandriichuk.cmediacal.LandingActivity
 import com.dmytroandriichuk.cmediacal.R
-import com.dmytroandriichuk.cmediacal.dialog.OfflineDialog
+import com.dmytroandriichuk.cmediacal.ui.search.dialog.FilterListAdapter
 import com.dmytroandriichuk.cmediacal.ui.search.dialog.FilterListDialog
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 
-class SearchFragment : Fragment() {
+
+class SearchFragment : Fragment(), FilterListAdapter.ChipClickListener {
 
     private lateinit var searchViewModel: SearchViewModel
 
@@ -59,7 +56,7 @@ class SearchFragment : Fragment() {
         R.id.filter_list -> {
             // User chose the "Settings" item, show the app settings UI...
             Log.i("SearchFragment", "onOptionsItemSelected: filter dialog")
-            val dialog = FilterListDialog()
+            val dialog = FilterListDialog(this)
             val manager: FragmentManager = (activity as LandingActivity).supportFragmentManager
             val transaction: FragmentTransaction = manager.beginTransaction()
             dialog.show(transaction, "filter dialog")
@@ -70,6 +67,8 @@ class SearchFragment : Fragment() {
             // User chose the "Log Out" action
             Log.i("SearchFragment", "onOptionsItemSelected: Home")
             FirebaseAuth.getInstance().signOut()
+            GoogleSignIn.getClient((activity as LandingActivity), GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build())
+                .signOut()
             (activity as LandingActivity).finish()
             true
         }
@@ -81,4 +80,15 @@ class SearchFragment : Fragment() {
         }
     }
 
+    companion object {
+        val TAG: String = SearchFragment::class.java.name
+    }
+
+    override fun setFilter(filter: String) {
+        Log.i(TAG, "setFilter: $filter")
+    }
+
+    override fun removeFilter(filter: String) {
+        Log.i(TAG, "removeFilter: $filter")
+    }
 }
