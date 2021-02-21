@@ -77,7 +77,8 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
 
     override fun onStart() {
         super.onStart()
-        if (mAuth.currentUser != null) {
+        val user = mAuth.currentUser
+        if (user != null && user.isEmailVerified) {
             Log.i("auth", "onStart: registered")
             intent = Intent(this@MainActivity, LandingActivity::class.java)
             startActivity(intent)

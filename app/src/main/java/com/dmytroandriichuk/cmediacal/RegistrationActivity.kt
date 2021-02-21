@@ -106,10 +106,12 @@ class RegistrationActivity : AppCompatActivity() {
                             .addOnFailureListener {
                                 Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
                             }
+//                        database.collection("User").document(currentUser.uid).get().addOnSuccessListener {
+//                            Log.d("TAGaaaaaaaa", "DocumentSnapshot data: ${it.data}")
+//                        }
                     }
-                } else {Toast.makeText(this, "Failed to register", Toast.LENGTH_LONG).show()}
+                } else {Toast.makeText(this, taskCreateUser.exception?.message.toString(), Toast.LENGTH_LONG).show()}
             }
-            Log.i("progress", "2: ")
             progressBar.visibility = View.GONE
         }
     }

@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dmytroandriichuk.cmediacal.LandingActivity
 import com.dmytroandriichuk.cmediacal.R
 import com.dmytroandriichuk.cmediacal.ui.search.dialog.FilterListDialog
-import com.dmytroandriichuk.cmediacal.ui.search.model.SearchListItem
+import com.dmytroandriichuk.cmediacal.ui.search.model.SearchListParentItem
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
@@ -40,18 +40,18 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener {
         val recyclerView = root.findViewById<RecyclerView>(R.id.searchListRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(activity)
 
-        val exampleList = ArrayList<SearchListItem>()
-        exampleList.add(SearchListItem("aaaaa",totalPrice = 111))
-        exampleList.add(SearchListItem("bbbbb",totalPrice = 22))
-        exampleList.add(SearchListItem("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"))
-        exampleList.add(SearchListItem("a1a2",totalPrice = 300))
-        exampleList.add(SearchListItem("1111", "aaaaa aaaaa"))
-        exampleList.add(SearchListItem("1111", "aaaaa aaaaa"))
-        exampleList.add(SearchListItem("1111", "aaaaa aaaaa"))
-        exampleList.add(SearchListItem("1111", "aaaaa aaaaa"))
-        exampleList.add(SearchListItem("1111", "aaaaa aaaaa"))
+        val exampleList = ArrayList<SearchListParentItem>()
+        exampleList.add(SearchListParentItem("aaaaa"))
+        exampleList.add(SearchListParentItem("cheap",servicesPrices = hashMapOf("something" to 20f,"something2" to 20f,"something3" to 10f)))
+        exampleList.add(SearchListParentItem("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"))
+        exampleList.add(SearchListParentItem("a1a2",))
+        exampleList.add(SearchListParentItem("expensive", "aaaaa aaaaa",servicesPrices = hashMapOf("something" to 200f,"something2" to 200f,"something3" to 200f)))
+        exampleList.add(SearchListParentItem("1111", "aaaaa aaaaa"))
+        exampleList.add(SearchListParentItem("1111", "aaaaa aaaaa"))
+        exampleList.add(SearchListParentItem("1111", "aaaaa aaaaa"))
+        exampleList.add(SearchListParentItem("1111", "aaaaa aaaaa"))
 
-        recyclerView.adapter = SearchListAdapter(exampleList, recyclerView.context)
+        recyclerView.adapter = SearchListParentAdapter(exampleList, recyclerView.context)
 
         val searchView: SearchView = root.findViewById(R.id.searchView)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -60,7 +60,7 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener {
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-                (recyclerView.adapter as SearchListAdapter).filter.filter(newText)
+                (recyclerView.adapter as SearchListParentAdapter).filter.filter(newText)
                 return false
             }
         })
@@ -80,6 +80,7 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener {
             // User chose the "Settings" item, show the app settings UI...
             Log.i("SearchFragment", "onOptionsItemSelected: filter dialog")
             val dialog = FilterListDialog(this)
+
             val manager: FragmentManager = (activity as LandingActivity).supportFragmentManager
             val transaction: FragmentTransaction = manager.beginTransaction()
             dialog.show(transaction, "filter dialog")

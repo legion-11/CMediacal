@@ -5,6 +5,9 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.res.TypedArray
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,7 +31,6 @@ class FilterListDialog(private val listener: FilterListDialogListener): AppCompa
             val inflater = requireActivity().layoutInflater
             val view = inflater.inflate(R.layout.dialog_filter_list, null)
             builder.setView(view)
-            isCancelable = true
 
             recyclerView = view as RecyclerView
             recyclerView.layoutManager = LinearLayoutManager(activity)
@@ -44,6 +46,9 @@ class FilterListDialog(private val listener: FilterListDialogListener): AppCompa
             builder.setPositiveButton("Apply") {
                         dialog, _ ->  listener.startFiltering()
                     }
+            builder.setNegativeButton("Close") {
+                dialog, _ ->  dialog.dismiss()
+            }
             builder.create()
         } ?: throw IllegalStateException("Activity cannot be null")
     }
