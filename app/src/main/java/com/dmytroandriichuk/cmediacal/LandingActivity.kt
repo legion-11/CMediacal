@@ -23,13 +23,6 @@ class LandingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_landing)
-//        val mToolbar = findViewById<Toolbar>(R.id.toolbar)
-//        setSupportActionBar(mToolbar)
-//        mToolbar.setNavigationIcon(R.drawable.ic_log_out)
-//        mToolbar.setNavigationOnClickListener {
-//            FirebaseAuth.getInstance().signOut()
-//            finish()
-//        }
 
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
@@ -54,20 +47,4 @@ class LandingActivity : AppCompatActivity() {
             startTime = System.currentTimeMillis()
         }
     }
-//
-//    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-//        android.R.id.home -> {
-//            // User chose the "Log Out" action
-//            Log.i("OrderActivity", "onOptionsItemSelected: Home")
-//            FirebaseAuth.getInstance().signOut()
-//            finish()
-//            true
-//        }
-//
-//        else -> {
-//            // If we got here, the user's action was not recognized.
-//            // Invoke the superclass to handle it.
-//            super.onOptionsItemSelected(item)
-//        }
-//    }
 }

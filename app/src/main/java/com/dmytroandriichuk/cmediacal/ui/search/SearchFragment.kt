@@ -3,45 +3,68 @@ package com.dmytroandriichuk.cmediacal.ui.search
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.dmytroandriichuk.cmediacal.LandingActivity
 import com.dmytroandriichuk.cmediacal.R
-import com.dmytroandriichuk.cmediacal.ui.search.dialog.FilterListAdapter
 import com.dmytroandriichuk.cmediacal.ui.search.dialog.FilterListDialog
+import com.dmytroandriichuk.cmediacal.ui.search.model.SearchListItem
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 
 
-class SearchFragment : Fragment(), FilterListAdapter.ChipClickListener {
+class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener {
 
     private lateinit var searchViewModel: SearchViewModel
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         searchViewModel = ViewModelProvider(this).get(SearchViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_search, container, false)
-        setHasOptionsMenu(true)
 
+        setHasOptionsMenu(true)
         val mToolbar = root.findViewById<Toolbar>(R.id.toolbar)
         (activity as LandingActivity).setSupportActionBar(mToolbar)
         mToolbar.setNavigationIcon(R.drawable.ic_log_out)
-//        mToolbar.setNavigationOnClickListener {
-//            FirebaseAuth.getInstance().signOut()
-//            (activity as LandingActivity).finish()
-//        }
 
-//        val textView: TextView = root.findViewById(R.id.text_home)
-//        searchViewModel.text.observe(viewLifecycleOwner, Observer {
-//            textView.text = it
-//        })
+        val recyclerView = root.findViewById<RecyclerView>(R.id.searchListRecyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(activity)
+
+        val exampleList = ArrayList<SearchListItem>()
+        exampleList.add(SearchListItem("aaaaa",totalPrice = 111))
+        exampleList.add(SearchListItem("bbbbb",totalPrice = 22))
+        exampleList.add(SearchListItem("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"))
+        exampleList.add(SearchListItem("a1a2",totalPrice = 300))
+        exampleList.add(SearchListItem("1111", "aaaaa aaaaa"))
+        exampleList.add(SearchListItem("1111", "aaaaa aaaaa"))
+        exampleList.add(SearchListItem("1111", "aaaaa aaaaa"))
+        exampleList.add(SearchListItem("1111", "aaaaa aaaaa"))
+        exampleList.add(SearchListItem("1111", "aaaaa aaaaa"))
+
+        recyclerView.adapter = SearchListAdapter(exampleList, recyclerView.context)
+
+        val searchView: SearchView = root.findViewById(R.id.searchView)
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                (recyclerView.adapter as SearchListAdapter).filter.filter(newText)
+                return false
+            }
+        })
+
         return root
     }
 
@@ -67,7 +90,11 @@ class SearchFragment : Fragment(), FilterListAdapter.ChipClickListener {
             // User chose the "Log Out" action
             Log.i("SearchFragment", "onOptionsItemSelected: Home")
             FirebaseAuth.getInstance().signOut()
-            GoogleSignIn.getClient((activity as LandingActivity), GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build())
+            GoogleSignIn.getClient(
+                (activity as LandingActivity), GoogleSignInOptions.Builder(
+                    GoogleSignInOptions.DEFAULT_SIGN_IN
+                ).build()
+            )
                 .signOut()
             (activity as LandingActivity).finish()
             true
@@ -82,6 +109,10 @@ class SearchFragment : Fragment(), FilterListAdapter.ChipClickListener {
 
     companion object {
         val TAG: String = SearchFragment::class.java.name
+    }
+
+    override fun startFiltering() {
+        Log.i(TAG, "startFiltering: ")
     }
 
     override fun setFilter(filter: String) {

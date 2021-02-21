@@ -1,6 +1,6 @@
-package com.dmytroandriichuk.cmediacal.ui.search.dialog.dataClasses
+package com.dmytroandriichuk.cmediacal.ui.search.dialog.model
 
-data class FilterListParentItem(
+data class DialogFilterListItem(
     val title: String,
     val listOfFilters: List<String>
 ){

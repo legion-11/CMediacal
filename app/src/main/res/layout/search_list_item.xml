@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="4dp"
+    android:elevation="4dp"
+    app:cardCornerRadius="4dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="4dp">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/search_item_clinic_card"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:padding="2dp"
+            app:cardCornerRadius="40dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/search_item_clinic_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/dental_clinic_picture" />
+
+        </androidx.cardview.widget.CardView>
+
+
+        <TextView
+            android:id="@+id/search_item_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="20dp"
+            android:layout_toEndOf="@+id/search_item_clinic_card"
+            android:text="@string/placeholder"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/search_item_total_price"
+            app:layout_constraintStart_toEndOf="@+id/search_item_clinic_card"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.25"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/search_item_address"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/search_item_name"
+            android:layout_marginStart="4dp"
+            android:layout_toEndOf="@+id/search_item_clinic_card"
+            android:text="@string/placeholder"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toEndOf="@+id/search_item_name"
+            app:layout_constraintStart_toEndOf="@+id/search_item_clinic_card"
+            app:layout_constraintTop_toBottomOf="@+id/search_item_name" />
+
+        <TextView
+            android:id="@+id/search_item_total_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/search_item_name"
+            android:layout_alignBottom="@+id/search_item_name"
+            android:layout_marginEnd="8dp"
+            android:gravity="center"
+            android:text="@string/placeholder"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

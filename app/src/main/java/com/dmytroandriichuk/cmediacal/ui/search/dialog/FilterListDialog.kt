@@ -6,19 +6,19 @@ import android.app.Dialog
 import android.content.res.TypedArray
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatDialogFragment
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dmytroandriichuk.cmediacal.R
-import com.dmytroandriichuk.cmediacal.ui.search.dialog.dataClasses.FilterListParentItem
-import com.google.protobuf.Empty
+import com.dmytroandriichuk.cmediacal.ui.search.dialog.model.DialogFilterListItem
 
-class FilterListDialog(private val listener: FilterListAdapter.ChipClickListener): AppCompatDialogFragment(){
+class FilterListDialog(private val listener: FilterListDialogListener): AppCompatDialogFragment(){
 
     private lateinit var recyclerView: RecyclerView
 
     interface FilterListDialogListener {
         fun startFiltering()
+        fun setFilter(filter: String)
+        fun removeFilter(filter: String)
     }
 
     @SuppressLint("InflateParams")
@@ -35,11 +35,14 @@ class FilterListDialog(private val listener: FilterListAdapter.ChipClickListener
             val filterResources: TypedArray = resources.obtainTypedArray(R.array.filters_resources)
             val filterItems = List(titles.size) { i ->
                 val arrayId = filterResources.getResourceId(i, 0)
-                FilterListParentItem(titles[i], resources.getStringArray(arrayId).toList())
+                DialogFilterListItem(titles[i], resources.getStringArray(arrayId).toList())
             }
+
             filterResources.recycle()
             recyclerView.adapter = FilterListAdapter(filterItems, recyclerView.context, listener)
-
+            builder.setPositiveButton("Apply") {
+                        dialog, _ ->  listener.startFiltering()
+                    }
             builder.create()
         } ?: throw IllegalStateException("Activity cannot be null")
     }
