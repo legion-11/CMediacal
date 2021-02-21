@@ -1,5 +1,6 @@
 package com.dmytroandriichuk.cmediacal
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
@@ -136,7 +137,7 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
                         }
                     }
                 } else {
-                    if(isOnline()){
+                    if(isOnline(this)){
                         buildDialog("User not found")
                     } else {
                         buildDialog("Connection error")
@@ -166,7 +167,7 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
                 } catch (e: ApiException) {
                     // Google Sign In failed, update UI appropriately
                     Log.w("MainActivity", "Google sign in failed", e)
-                    // ...
+                    buildDialog("Connection error")
                 }
             } else { Log.w("MainActivity", task.exception) }
         }
@@ -207,8 +208,8 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
     }
 
     override fun goOfflineClicked() {
-//        intent = Intent(this@MainActivity, ShowOrdersActivity::class.java)
-//        startActivity(intent)
+        intent = Intent(this@MainActivity, LandingActivity::class.java)
+        startActivity(intent)
     }
 
     override fun sendVerificationLetter() {
@@ -216,33 +217,34 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
     }
 
     //check internet connection
-    private fun isOnline(): Boolean {
-        val connectivityManager =
-                this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val capabilities =
-                connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-        if (capabilities != null) {
-            when {
-                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
-                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
-                    return true
-                }
-                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
-                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
-                    return true
-                }
-                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> {
-                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
-                    return true
-                }
-            }
-        }
-        Log.i("Internet", "No network")
-        return false
-    }
+
 
     companion object {
         val RC_SIGN_IN = 111
+
+        fun isOnline(owner: Activity): Boolean {
+            val connectivityManager = owner.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val capabilities =
+                connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+            if (capabilities != null) {
+                when {
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
+                        Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
+                        return true
+                    }
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
+                        Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
+                        return true
+                    }
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> {
+                        Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
+                        return true
+                    }
+                }
+            }
+            Log.i("Internet", "No network")
+            return false
+        }
     }
 }
 

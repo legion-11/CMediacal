@@ -28,6 +28,7 @@ class FilterListDialog(private val listener: FilterListDialogListener): AppCompa
             val inflater = requireActivity().layoutInflater
             val view = inflater.inflate(R.layout.dialog_filter_list, null)
             builder.setView(view)
+            isCancelable = true
 
             recyclerView = view as RecyclerView
             recyclerView.layoutManager = LinearLayoutManager(activity)

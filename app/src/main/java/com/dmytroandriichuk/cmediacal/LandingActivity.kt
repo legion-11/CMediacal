@@ -13,6 +13,8 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.dmytroandriichuk.cmediacal.MainActivity.Companion
+import com.dmytroandriichuk.cmediacal.MainActivity.Companion.isOnline
 import com.google.firebase.auth.FirebaseAuth
 import kotlin.system.exitProcess
 
@@ -41,7 +43,8 @@ class LandingActivity : AppCompatActivity() {
         } else {
             Toast.makeText(
                 this,
-                "Press one more time to close app.\nYou won't be Logged Out of your account",
+                "Press one more time to close app" + if (isOnline(this))
+                "\nYou won't be Logged Out of your account" else "",
                 Toast.LENGTH_LONG
             ).show()
             startTime = System.currentTimeMillis()

@@ -1,7 +1,6 @@
 package com.dmytroandriichuk.cmediacal.ui.search
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,21 +12,19 @@ import com.dmytroandriichuk.cmediacal.ui.search.model.SearchListItem
 import com.squareup.picasso.Picasso
 import android.widget.Filter
 import android.widget.Filterable
-import com.dmytroandriichuk.cmediacal.ui.search.SearchFragment.Companion.TAG
 import java.util.*
-import kotlin.collections.ArrayList
 
-class SearchListAdapter(private var dataSet: List<SearchListItem>,
+class SearchListAdapter(dataSet: ArrayList<SearchListItem>,
                         private val context: Context):
     RecyclerView.Adapter<SearchListAdapter.ViewHolder>(),
     Filterable {
-
-    private val dataSetFull: List<SearchListItem>
+    private var dataSetFiltered: ArrayList<SearchListItem>
+    private var dataSetFull = ArrayList(dataSet.sortedWith(compareBy({ it.totalPrice }, { it.name })))
 
     init {
-        dataSet = dataSet.sortedWith(compareBy<SearchListItem>{ it.totalPrice }.thenBy { it.name })
-        dataSetFull = ArrayList(dataSet)
+        dataSetFiltered = ArrayList(dataSetFull)
     }
+
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val nameTV: TextView = view.findViewById(R.id.search_item_name)
@@ -43,39 +40,38 @@ class SearchListAdapter(private var dataSet: List<SearchListItem>,
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = dataSet[position]
+        val item = dataSetFiltered[position]
         holder.nameTV.text = item.name
         holder.addressTV.text = item.address
         Picasso.get().load(item.imageURL).resize(80, 80).centerCrop().into(holder.image)
         holder.totalPrice.text = context.resources.getString(R.string.price_format).format(item.totalPrice)
     }
 
-    override fun getItemCount(): Int = dataSet.size
+    override fun getItemCount(): Int = dataSetFiltered.size
 
     override fun getFilter(): Filter {
         return  object : Filter() {
             override fun performFiltering(constraint: CharSequence): FilterResults {
-                val filteredList: MutableList<SearchListItem> = ArrayList()
-                if (constraint.isEmpty()) {
-                    filteredList.addAll(dataSetFull)
+                val filteredList: ArrayList<SearchListItem> = ArrayList()
+                dataSetFiltered = if (constraint.isEmpty()) {
+                    dataSetFull
                 } else {
                     val filterPattern = constraint.toString().toLowerCase(Locale.ROOT).trim()
-                    for (item in dataSetFull) {
+                    for (item in dataSetFiltered) {
                         if (item.name.toLowerCase(Locale.ROOT).contains(filterPattern)) {
                             filteredList.add(item)
                         }
                     }
+                    filteredList
                 }
                 val results = FilterResults()
-                results.values = filteredList
+                results.values = dataSetFiltered
                 return results
             }
 
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(constraint: CharSequence, results: FilterResults) {
-                (dataSet as MutableList).clear()
-                (dataSet as MutableList).addAll(results.values as List<SearchListItem>)
-                dataSet = dataSet.sortedWith(compareBy({ it.totalPrice }, { it.name }))
+                dataSetFiltered = results.values as ArrayList<SearchListItem>
                 notifyDataSetChanged()
             }
         }
