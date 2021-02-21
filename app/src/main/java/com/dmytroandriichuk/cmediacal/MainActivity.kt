@@ -115,13 +115,6 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
             passwordLayout.error = ""
         }
 
-        if (password.length < 6) {
-            passwordLayout.error = "password must be at least 6 characters"
-            errors = true
-        } else {
-            passwordLayout.error = ""
-        }
-
         //send email verifiaction letter and create user
         if (!errors && progressBar.visibility == View.GONE ){
             progressBar.visibility = View.VISIBLE

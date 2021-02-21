@@ -5,8 +5,8 @@
     <string name="email">Email</string>
     <string name="save">Save</string>
     <string name="sign_in">Sign In</string>
-    <string name="forgot_password">Forgot Password</string>
-    <string name="register">Register</string>
+    <string name="forgot_password">Forgot your password? Get help here</string>
+    <string name="register">Do not have an account? Sign Up</string>
     <string name="enter_password">Enter Password</string>
     <string name="enter_email">Enter Email</string>
     <string name="back">Back</string>
@@ -23,23 +23,23 @@
     <string name="price_format">%s$</string>
 
     <string-array name="filter_titles">
+        <item>Province and territorial codes</item>
         <item>White Tooth Filling</item>
         <item>Root Canal</item>
         <item>Tooth Removal</item>
         <item>Cleaning</item>
         <item>Check up</item>
         <item>Other</item>
-        <item>Province and territorial codes</item>
     </string-array>
 
     <array name="filters_resources">
+        <item>@array/filters7</item>
         <item>@array/filters1</item>
         <item>@array/filters2</item>
         <item>@array/filters3</item>
         <item>@array/filters4</item>
         <item>@array/filters5</item>
         <item>@array/filters6</item>
-        <item>@array/filters7</item>
     </array>
 
     <string-array name="filters1">

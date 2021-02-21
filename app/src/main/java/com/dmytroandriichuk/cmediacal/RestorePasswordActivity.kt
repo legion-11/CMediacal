@@ -23,7 +23,7 @@ class RestorePasswordActivity : AppCompatActivity() {
         val emailET = findViewById<TextInputEditText>(R.id.restorePasswordET)
         val emailLayout = findViewById<TextInputLayout>(R.id.restorePasswordLayout)
         val button = findViewById<Button>(R.id.restorePasswordButton)
-        val probressBar = findViewById<ProgressBar>(R.id.restorepasswordProgressBar)
+        val probressBar = findViewById<ProgressBar>(R.id.restorePasswordProgressBar)
         button.setOnClickListener {
             var errors = false
             val email = emailET.text.toString().trim()

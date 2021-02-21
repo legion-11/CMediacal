@@ -25,6 +25,7 @@ class RegistrationActivity : AppCompatActivity() {
 
     private lateinit var emailLayout: TextInputLayout
     private lateinit var passwordLayout: TextInputLayout
+    private lateinit var passwordLayout2: TextInputLayout
     private lateinit var nameLayout: TextInputLayout
     private lateinit var progressBar: ProgressBar
 
@@ -41,7 +42,7 @@ class RegistrationActivity : AppCompatActivity() {
 
         emailLayout = findViewById(R.id.emailRegistrationLayout)
         passwordLayout = findViewById(R.id.passwordRegistrationLayout)
-        passwordLayout = findViewById(R.id.passwordRegistrationLayout2)
+        passwordLayout2 = findViewById(R.id.passwordRegistrationLayout2)
 
         progressBar = findViewById(R.id.registrationProgressBar)
 
@@ -71,8 +72,8 @@ class RegistrationActivity : AppCompatActivity() {
             emailLayout.error = ""
         }
 
-        if (password.isEmpty()) {
-            passwordLayout.error = "password is required"
+        if (password != password2) {
+            passwordLayout.error = "passwords are different"
             errors = true
         } else {
             passwordLayout.error = ""
@@ -82,14 +83,9 @@ class RegistrationActivity : AppCompatActivity() {
             passwordLayout.error = "password must be at least 6 characters"
             errors = true
         } else {
-            passwordLayout.error = ""
-        }
-
-        if (password != password2) {
-            passwordLayout.error = "passwords are different"
-            errors = true
-        } else {
-            passwordLayout.error = ""
+            if (!errors) {
+                passwordLayout.error = ""
+            }
         }
 
         if (!errors) {

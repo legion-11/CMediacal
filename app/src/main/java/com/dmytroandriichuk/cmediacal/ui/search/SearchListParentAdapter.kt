@@ -30,7 +30,6 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>,
         dataSetFiltered = ArrayList(dataSetFull)
     }
 
-
     class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         val nameTV: TextView = view.findViewById(R.id.search_item_name)
         val addressTV: TextView = view.findViewById(R.id.search_item_address)
@@ -57,11 +56,12 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>,
         layoutManager.initialPrefetchItemCount = list.size
         holder.recyclerView.layoutManager = layoutManager
         holder.recyclerView.adapter = SearchListChildAdapter(list, context)
+        holder.recyclerView.setRecycledViewPool(viewPool)
         holder.recyclerView.visibility = if (item.expanded) View.VISIBLE else View.GONE
 
         holder.view.setOnClickListener {
             item.expanded = !item.expanded
-            notifyItemChanged(position);
+            notifyItemChanged(position)
         }
     }
 
