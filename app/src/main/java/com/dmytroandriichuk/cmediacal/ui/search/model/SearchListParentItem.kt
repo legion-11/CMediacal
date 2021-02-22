@@ -3,6 +3,7 @@ package com.dmytroandriichuk.cmediacal.ui.search.model
 import android.media.Image
 import com.dmytroandriichuk.cmediacal.R
 
+//POJO item of SearchListParentAdapter
 data class SearchListParentItem(
         val name: String = "Placeholder Clinic",
         val address: String = "222 Toronto Street",

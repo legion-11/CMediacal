@@ -42,6 +42,7 @@ class RestorePasswordActivity : AppCompatActivity() {
             }
             if (errors) return@setOnClickListener
             probressBar.visibility = View.VISIBLE
+            //send email message for password restoration
             mAuth.sendPasswordResetEmail(email)
                     .addOnSuccessListener { Toast.makeText(this, "Check your email", Toast.LENGTH_LONG).show() }
                     .addOnFailureListener { Toast.makeText(this, it.message, Toast.LENGTH_LONG).show() }

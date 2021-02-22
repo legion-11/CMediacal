@@ -24,6 +24,7 @@ class OfflineDialog(private val message: String): DialogFragment() {
                 }
 
             when (message) {
+                //resend email message
                 "Account is not verified" -> {
                     builder.setNegativeButton("Send Verification Letter") { _, _ ->
                         dialogListener.sendVerificationLetter()
@@ -54,6 +55,7 @@ class OfflineDialog(private val message: String): DialogFragment() {
         }
     }
 
+    //interface for dialog button click implementation
     interface OfflineDialogListener {
         fun goOfflineClicked()
         fun sendVerificationLetter()

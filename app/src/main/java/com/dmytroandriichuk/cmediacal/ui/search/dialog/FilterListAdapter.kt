@@ -11,7 +11,7 @@ import com.dmytroandriichuk.cmediacal.ui.search.dialog.model.DialogFilterListIte
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 
-
+//adapter for recycleView for search clinics
 class FilterListAdapter(private val dataSet: List<DialogFilterListItem>,
                         private val context: Context,
                         private val listener: FilterListDialog.FilterListDialogListener):
@@ -34,11 +34,14 @@ class FilterListAdapter(private val dataSet: List<DialogFilterListItem>,
             val chip = Chip(context)
             chip.text = filter
             chip.isCheckable = true
+            //add padding so chips would not change their size on click due to icon appearance
             chip.chipStartPadding = 37f
             chip.chipEndPadding = 37f
 //            chip.setChipBackgroundColorResource(R.color.colorAccent)
 //            chip.setTextColor(getResources().getColor(R.color.white))
 //            chip.setTextAppearance(R.style.ChipTextAppearance)
+
+            //
             chip.setOnCheckedChangeListener { buttonView, isChecked ->
                 if(isChecked) {
                     listener.setFilter(item.title + " : " + buttonView.text.toString())

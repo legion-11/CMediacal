@@ -20,4 +20,5 @@
 
     <color name="colorTextInputOutlineDefaultColor">@color/white</color>
     <color name="colorTextInputOutlineSelectedColor">@color/purple_200</color>
+    <color name="colorDivider">@color/white</color>
 </resources>

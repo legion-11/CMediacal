@@ -18,18 +18,28 @@ import com.squareup.picasso.Picasso
 import java.util.*
 import kotlin.collections.ArrayList
 
+//first adapter for the recycleView with nested items
 class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>,
                               private val context: Context):
     RecyclerView.Adapter<SearchListParentAdapter.ViewHolder>(),
     Filterable {
     private var dataSetFiltered: ArrayList<SearchListParentItem>
     private var dataSetFull = ArrayList(dataSet.sortedWith(compareBy({ it.totalPrice }, { it.name })))
+
+    // An object of RecyclerView.RecycledViewPool
+    // is created to share the Views
+    // between the child and
+    // the parent RecyclerViews
     private val viewPool = RecycledViewPool()
 
     init {
+        //copy the list for future filtering
         dataSetFiltered = ArrayList(dataSetFull)
     }
 
+    // This class is to initialize
+    // the Views present in
+    // the parent RecyclerView
     class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         val nameTV: TextView = view.findViewById(R.id.search_item_name)
         val addressTV: TextView = view.findViewById(R.id.search_item_address)
@@ -39,6 +49,8 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>,
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        // Here we inflate the corresponding
+        // layout of the parent item
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.search_list_parent_item, parent, false)
         return ViewHolder(view)
@@ -51,6 +63,9 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>,
         Picasso.get().load(item.imageURL).resize(80, 80).centerCrop().into(holder.image)
         holder.totalPrice.text = context.resources.getString(R.string.price_format).format(item.totalPrice)
 
+        // Create an instance of the child
+        // item view adapter and set its
+        // adapter, layout manager and RecyclerViewPool
         val list = item.servicesPrices.map { SearchListChildItem(it.key, it.value) } as ArrayList
         val layoutManager = LinearLayoutManager(holder.recyclerView.context)
         layoutManager.initialPrefetchItemCount = list.size
@@ -59,14 +74,17 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>,
         holder.recyclerView.setRecycledViewPool(viewPool)
         holder.recyclerView.visibility = if (item.expanded) View.VISIBLE else View.GONE
 
+        //expand item on click
         holder.view.setOnClickListener {
             item.expanded = !item.expanded
             notifyItemChanged(position)
         }
     }
 
+    //number of items in recycleView
     override fun getItemCount(): Int = dataSetFiltered.size
 
+    //filter items by clinic name
     override fun getFilter(): Filter {
         return  object : Filter() {
             override fun performFiltering(constraint: CharSequence): FilterResults {

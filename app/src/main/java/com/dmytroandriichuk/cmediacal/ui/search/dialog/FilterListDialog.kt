@@ -14,10 +14,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dmytroandriichuk.cmediacal.R
 import com.dmytroandriichuk.cmediacal.ui.search.dialog.model.DialogFilterListItem
 
+//Dialog that provides user with filtering options for recycleView
 class FilterListDialog(private val listener: FilterListDialogListener): AppCompatDialogFragment(){
 
     private lateinit var recyclerView: RecyclerView
 
+    //interface for filter click callback
     interface FilterListDialogListener {
         fun startFiltering()
         fun setFilter(filter: String)
@@ -32,6 +34,7 @@ class FilterListDialog(private val listener: FilterListDialogListener): AppCompa
             val view = inflater.inflate(R.layout.dialog_filter_list, null)
             builder.setView(view)
 
+            //each element of recycleView is title with chip group
             recyclerView = view as RecyclerView
             recyclerView.layoutManager = LinearLayoutManager(activity)
             val titles: Array<String> = resources.getStringArray(R.array.filter_titles)

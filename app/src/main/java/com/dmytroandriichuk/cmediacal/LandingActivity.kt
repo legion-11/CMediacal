@@ -36,6 +36,7 @@ class LandingActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
     }
 
+    //check for double press of back button and close app
     override fun onBackPressed() {
         if (System.currentTimeMillis() - startTime < 2000){
             finishAffinity()

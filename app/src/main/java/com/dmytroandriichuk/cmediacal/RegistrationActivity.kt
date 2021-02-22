@@ -13,7 +13,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-// provide screen for registration
+// provide screen for registration using email and password
 class RegistrationActivity : AppCompatActivity() {
 
     private lateinit var mAuth: FirebaseAuth
@@ -26,7 +26,6 @@ class RegistrationActivity : AppCompatActivity() {
     private lateinit var emailLayout: TextInputLayout
     private lateinit var passwordLayout: TextInputLayout
     private lateinit var passwordLayout2: TextInputLayout
-    private lateinit var nameLayout: TextInputLayout
     private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {

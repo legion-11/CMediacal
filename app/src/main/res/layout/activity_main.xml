@@ -11,8 +11,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         android:text="@string/sign_in"
         android:textColor="#FFFFFF"
         android:textSize="22sp"
@@ -67,17 +67,26 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/divider" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/colorDivider"
+        app:layout_constraintBottom_toBottomOf="@+id/divider"
+        app:layout_constraintEnd_toStartOf="@+id/divider"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/sign_in_with_google_button"
+        app:layout_constraintTop_toTopOf="@+id/divider" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/divider"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:background="@color/white"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
-        android:text="OR"
+        android:text="@string/or"
         app:layout_constraintBottom_toTopOf="@+id/registration_TV"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -85,15 +94,13 @@
         app:layout_constraintTop_toBottomOf="@+id/forget_password_TV" />
 
     <View
-        android:id="@+id/view"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:background="@android:color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/textView"
+        android:background="@color/colorDivider"
+        app:layout_constraintBottom_toBottomOf="@+id/divider"
         app:layout_constraintEnd_toEndOf="@+id/sign_in_with_google_button"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="@+id/sign_in_with_google_button"
-        app:layout_constraintTop_toTopOf="@+id/textView" />
+        app:layout_constraintStart_toEndOf="@+id/divider"
+        app:layout_constraintTop_toTopOf="@+id/divider" />
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_with_google_button"

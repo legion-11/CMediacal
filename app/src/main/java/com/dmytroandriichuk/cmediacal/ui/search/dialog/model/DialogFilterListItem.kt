@@ -1,7 +1,9 @@
 package com.dmytroandriichuk.cmediacal.ui.search.dialog.model
 
 data class DialogFilterListItem(
+    //filter category
     val title: String,
+    // list of filters in category (small, medium, ...)
     val listOfFilters: List<String>
 ){
     override fun toString(): String {

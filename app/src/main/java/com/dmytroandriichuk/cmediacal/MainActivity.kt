@@ -24,6 +24,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 
 //screen for log in
+//TODO make splash screen
 class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
     private lateinit var mAuth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
@@ -38,6 +39,8 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         mAuth = FirebaseAuth.getInstance()
+
+        //provides auth with google
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -48,9 +51,6 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
         emailET = findViewById(R.id.emailET)
         passwordET = findViewById(R.id.passwordET)
         progressBar = findViewById(R.id.log_in_progress_bar)
-
-        val sharedPreferences = getSharedPreferences("user default", Context.MODE_PRIVATE)
-        emailET.setText(sharedPreferences.getString("Email", ""))
 
         emailLayout = findViewById(R.id.emailLayout)
         passwordLayout = findViewById(R.id.passwordLayout)
@@ -75,17 +75,17 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
         }
     }
 
+    //check if user is authenticated and redirect him if one is
     override fun onStart() {
         super.onStart()
         val user = mAuth.currentUser
         if (user != null && user.isEmailVerified) {
-            Log.i("auth", "onStart: registered")
+            Log.i("auth", "onStart: user registered")
             intent = Intent(this@MainActivity, LandingActivity::class.java)
             startActivity(intent)
         } else {
-            Log.i("auth", "onStart: not registered")
+            Log.i("auth", "onStart: user not registered")
         }
-
     }
 
     //check input and create user
@@ -116,6 +116,7 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
         }
 
         //send email verifiaction letter and create user
+        //check visibility not allowing to press button few times
         if (!errors && progressBar.visibility == View.GONE ){
             progressBar.visibility = View.VISIBLE
             mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
@@ -141,11 +142,13 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
         }
     }
 
+    //provide dialog for auth with google
     private fun signInWithGoogle() {
         val signInIntent = googleSignInClient.signInIntent
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }
 
+    //provide dialog for auth with google
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -167,6 +170,8 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
         }
     }
 
+
+    //example for user auth from https://developers.google.com/identity/sign-in/android/start-integrating
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         mAuth.signInWithCredential(credential)
@@ -183,7 +188,7 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
                 }
     }
 
-    //show error message
+    //show error message, depending on message provides option to log in for offline usage
     private fun buildDialog(message: String){
         val dialog = OfflineDialog(message)
         val manager: FragmentManager = supportFragmentManager
@@ -210,12 +215,9 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
         mAuth.currentUser?.sendEmailVerification()
     }
 
-    //check internet connection
-
-
     companion object {
-        val RC_SIGN_IN = 111
-
+        const val RC_SIGN_IN = 111
+        //check internet connection
         fun isOnline(owner: Activity): Boolean {
             val connectivityManager = owner.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             val capabilities =
