@@ -21,6 +21,7 @@
     <string name="dental_clinic_picture">dental clinic picture</string>
     <string name="placeholder">placeholder</string>
     <string name="price_format">%s$</string>
+    <string name="or">OR</string>
 
     <string-array name="filter_titles">
         <item>Province and territorial codes</item>
