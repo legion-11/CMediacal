@@ -17,7 +17,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 class RegistrationActivity : AppCompatActivity() {
 
     private lateinit var mAuth: FirebaseAuth
-    private lateinit var database: FirebaseFirestore
 
     private lateinit var emailET: EditText
     private lateinit var passwordET: EditText
@@ -33,7 +32,6 @@ class RegistrationActivity : AppCompatActivity() {
         setContentView(R.layout.activity_registration)
 
         mAuth = FirebaseAuth.getInstance()
-        database = FirebaseFirestore.getInstance()
 
         emailET = findViewById(R.id.emailRegistrationET)
         passwordET = findViewById(R.id.passwordlRegistrationET)
@@ -89,24 +87,15 @@ class RegistrationActivity : AppCompatActivity() {
 
         if (!errors) {
             progressBar.visibility = View.VISIBLE
-            mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { taskCreateUser ->
-                if (taskCreateUser.isSuccessful) {
-                    val user = hashMapOf("email" to email)
-                    mAuth.currentUser?.let { currentUser ->
-                        database.collection("User").document(currentUser.uid).set(user)
-                            .addOnSuccessListener  {
-                                currentUser.sendEmailVerification()
-                                Toast.makeText(this, "User registered successfully! Verification letter will be send to your email", Toast.LENGTH_LONG).show()
-                            }
-                            .addOnFailureListener {
-                                Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
-                            }
-//                        database.collection("User").document(currentUser.uid).get().addOnSuccessListener {
-//                            Log.d("TAGaaaaaaaa", "DocumentSnapshot data: ${it.data}")
-//                        }
+            mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnSuccessListener {
+                        mAuth.currentUser?.sendEmailVerification()
+                        Toast.makeText(this, "User registered successfully! Verification letter will be send to your email", Toast.LENGTH_LONG).show()
                     }
-                } else {Toast.makeText(this, taskCreateUser.exception?.message.toString(), Toast.LENGTH_LONG).show()}
-            }
+                    .addOnFailureListener {
+                        Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
+                    }
+
             progressBar.visibility = View.GONE
         }
     }

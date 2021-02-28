@@ -10,6 +10,8 @@
         android:id="@+id/sign_in_with_email_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
         android:layout_marginBottom="8dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
@@ -108,9 +110,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         app:buttonSize="wide"
-        app:layout_constraintEnd_toEndOf="@+id/sign_in_with_email_button"
+        app:layout_constraintEnd_toEndOf="@+id/passwordLayout"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/sign_in_with_email_button"
+        app:layout_constraintStart_toStartOf="@+id/passwordLayout"
         app:layout_constraintTop_toBottomOf="@+id/sign_in_with_email_button" />
 
     <com.google.android.material.textfield.TextInputLayout

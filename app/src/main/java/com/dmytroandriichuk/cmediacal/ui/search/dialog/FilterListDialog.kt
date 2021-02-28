@@ -5,9 +5,6 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.res.TypedArray
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,9 +18,13 @@ class FilterListDialog(private val listener: FilterListDialogListener): AppCompa
 
     //interface for filter click callback
     interface FilterListDialogListener {
-        fun startFiltering()
+        var provinces: ArrayList<String>
+        var filters: ArrayList<String>
+        fun startQuery()
         fun setFilter(filter: String)
         fun removeFilter(filter: String)
+        fun setProvince(filter: String)
+        fun removeProvince(filter: String)
     }
 
     @SuppressLint("InflateParams")
@@ -47,7 +48,7 @@ class FilterListDialog(private val listener: FilterListDialogListener): AppCompa
             filterResources.recycle()
             recyclerView.adapter = FilterListAdapter(filterItems, recyclerView.context, listener)
             builder.setPositiveButton("Apply") {
-                        dialog, _ ->  listener.startFiltering()
+                        dialog, _ ->  listener.startQuery()
                     }
             builder.setNegativeButton("Close") {
                 dialog, _ ->  dialog.dismiss()

@@ -18,11 +18,14 @@ import com.dmytroandriichuk.cmediacal.ui.search.model.SearchListParentItem
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 
-//first frgment of landing screen, provides search for clinics depending on search options
+//first fragment of landing screen, provides search for clinics depending on search options
 class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener {
 
     private lateinit var searchViewModel: SearchViewModel
+    private lateinit var database: FirebaseFirestore
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,6 +34,7 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener {
     ): View? {
         searchViewModel = ViewModelProvider(this).get(SearchViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_search, container, false)
+        database = FirebaseFirestore.getInstance()
 
         //allows each fragment have it's own toolbar
         setHasOptionsMenu(true)
@@ -114,21 +118,58 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener {
     }
 
     companion object {
-        val TAG: String = SearchFragment::class.java.name
+        const val TAG: String = "SearchFragment"
     }
+
+    override var provinces: ArrayList<String> = ArrayList()
+    override var filters: ArrayList<String> = ArrayList()
 
     //start filtering list by tags
-    override fun startFiltering() {
-        Log.i(TAG, "startFiltering: ")
+    override fun startQuery() {
+        Log.i(TAG, "startQuery: ")
+        // TODO add tags
+        val ref = database.collection("Dental Clinics")
+        var query:Query? = null
+        if (provinces.isNotEmpty()){
+            query = ref.whereIn("Province", provinces)
+        }
+        for (filter in filters){
+            query = query?.whereEqualTo("tag $filter", true) ?: ref.whereEqualTo("tag $filter", true)
+        }
+        query?.let {
+            query.get().addOnSuccessListener { docs ->
+                for (doc in docs) {
+                    Log.d(TAG, "${doc.id} => ${doc.data}")
+                }
+                Log.d(TAG, "startQuery: ${docs.documents}")
+            }
+        }
+
     }
 
-    //add tags for filtering
+    //add tag for filtering
     override fun setFilter(filter: String) {
         Log.i(TAG, "setFilter: $filter")
+        filters.add(filter)
     }
 
-    //remove filtering tags
+    //remove filtering tag
     override fun removeFilter(filter: String) {
         Log.i(TAG, "removeFilter: $filter")
+        filters.remove(filter)
+    }
+
+    //add province tag
+    override fun setProvince(filter: String) {
+        Log.i(TAG, "setProvince: $filter")
+        provinces.add(filter)
+        Log.i(TAG, "setProvince: $provinces")
+    }
+
+    //remove province tag
+    override fun removeProvince(filter: String) {
+        Log.i(TAG, "removeProvince: $filter")
+        provinces.remove(filter)
+        Log.i(TAG, "removeProvince: $provinces")
     }
 }

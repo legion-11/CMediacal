@@ -34,21 +34,41 @@ class FilterListAdapter(private val dataSet: List<DialogFilterListItem>,
             val chip = Chip(context)
             chip.text = filter
             chip.isCheckable = true
-            //add padding so chips would not change their size on click due to icon appearance
-            chip.chipStartPadding = 37f
-            chip.chipEndPadding = 37f
-//            chip.setChipBackgroundColorResource(R.color.colorAccent)
-//            chip.setTextColor(getResources().getColor(R.color.white))
-//            chip.setTextAppearance(R.style.ChipTextAppearance)
 
-            //
+            if (filter in listener.provinces ||  "${item.title}: $filter"  in listener.filters){
+                chip.isChecked = true
+                chip.chipStartPadding = 8f
+                chip.chipEndPadding = 0f
+
+            } else {
+                chip.chipStartPadding = 37f
+                chip.chipEndPadding = 37f
+            }
+
+            //add padding so chips would not change their size on click due to icon appearance
+
             chip.setOnCheckedChangeListener { buttonView, isChecked ->
                 if(isChecked) {
-                    listener.setFilter(item.title + " : " + buttonView.text.toString())
+                    if (position == 0) {
+                        if (listener.provinces.size <= 9){
+                            listener.setProvince(filter)
+                        } else {
+                            buttonView.isChecked = false
+                            chip.chipStartPadding = 37f
+                            chip.chipEndPadding = 37f
+                            return@setOnCheckedChangeListener
+                        }
+                    } else {
+                        listener.setFilter("${item.title}: $filter")
+                    }
                     chip.chipStartPadding = 8f
                     chip.chipEndPadding = 0f
                 } else {
-                    listener.removeFilter(item.title + " : " + buttonView.text.toString())
+                    if (position == 0) {
+                        listener.removeProvince(filter)
+                    } else {
+                        listener.removeFilter("${item.title}: $filter")
+                    }
                     chip.chipStartPadding = 37f
                     chip.chipEndPadding = 37f
                 }
