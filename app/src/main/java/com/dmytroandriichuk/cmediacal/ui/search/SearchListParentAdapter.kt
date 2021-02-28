@@ -1,6 +1,7 @@
 package com.dmytroandriichuk.cmediacal.ui.search
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,6 +36,13 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>,
     init {
         //copy the list for future filtering
         dataSetFiltered = ArrayList(dataSetFull)
+    }
+
+    fun changeDataSet(dataSet: ArrayList<SearchListParentItem>){
+        dataSetFull = ArrayList(dataSet.sortedWith(compareBy({ it.totalPrice }, { it.name })))
+        dataSetFiltered = ArrayList(dataSetFull)
+        notifyDataSetChanged()
+        Log.i("TAG", "changeDataSet: $dataSetFull")
     }
 
     // This class is to initialize

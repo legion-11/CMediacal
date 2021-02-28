@@ -46,19 +46,11 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener {
         val recyclerView = root.findViewById<RecyclerView>(R.id.searchListRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(activity)
 
-        //TODO replace with db implementation
-        val exampleList = ArrayList<SearchListParentItem>()
-        exampleList.add(SearchListParentItem("place"))
-        exampleList.add(SearchListParentItem("cheap",servicesPrices = hashMapOf("something" to 20f,"something2" to 20f,"something3" to 10f)))
-        exampleList.add(SearchListParentItem("really long name aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"))
-        exampleList.add(SearchListParentItem())
-        exampleList.add(SearchListParentItem("expensive", "aaaaa aaaaa",servicesPrices = hashMapOf("something" to 200f,"something2" to 200f,"something3" to 200f)))
-        exampleList.add(SearchListParentItem("palce"))
-        exampleList.add(SearchListParentItem("exp"))
-        exampleList.add(SearchListParentItem("cheap not"))
-        exampleList.add(SearchListParentItem())
+        recyclerView.adapter = SearchListParentAdapter(ArrayList(), recyclerView.context)
+        searchViewModel.clinicItems.observe(viewLifecycleOwner, {
+            (recyclerView.adapter as SearchListParentAdapter).changeDataSet(it)
+        })
 
-        recyclerView.adapter = SearchListParentAdapter(exampleList, recyclerView.context)
 
         //provide search through recycleView
         val searchView: SearchView = root.findViewById(R.id.searchView)
@@ -138,10 +130,7 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener {
         }
         query?.let {
             query.get().addOnSuccessListener { docs ->
-                for (doc in docs) {
-                    Log.d(TAG, "${doc.id} => ${doc.data}")
-                }
-                Log.d(TAG, "startQuery: ${docs.documents}")
+                searchViewModel.setClinicItems(docs, filters)
             }
         }
 

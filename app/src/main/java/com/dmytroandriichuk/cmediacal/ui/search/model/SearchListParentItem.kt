@@ -5,18 +5,28 @@ import com.dmytroandriichuk.cmediacal.R
 
 //POJO item of SearchListParentAdapter
 data class SearchListParentItem(
-        val name: String = "Placeholder Clinic",
-        val address: String = "222 Toronto Street",
-        val imageURL: String = "https://therichmonddentalcentre.com/wp-content/uploads/2016/07/IMG_9025.jpg",
-        val servicesPrices: HashMap<String, Float> = hashMapOf(
-                "Filling: small" to 150f,
-                "Other: cleaning" to 100f,
-                "X-ray" to 150f
+        var name: String = "Placeholder Clinic",
+        var address: String = "Placeholder Address",
+        var imageURL: String = "https://therichmonddentalcentre.com/wp-content/uploads/2016/07/IMG_9025.jpg",
+        var servicesPrices: Map<String, Double> = mapOf(
+                "Filling: small" to 150.0,
+                "Other: cleaning" to 100.0,
+                "X-ray" to 150.0
         ),
         var expanded: Boolean = false
 ) {
-    var totalPrice: Float = 0f
+    var totalPrice: Double = 0.0
     init {
+        calcTotal()
+    }
+
+    fun updateServicesPrices(value: Map<String, Double>){
+        servicesPrices = value
+        calcTotal()
+    }
+
+    fun calcTotal(){
+        totalPrice = 0.0
         for (s in servicesPrices){
             totalPrice += s.value
         }
