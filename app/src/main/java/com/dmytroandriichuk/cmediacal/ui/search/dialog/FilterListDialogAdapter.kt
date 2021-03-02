@@ -12,10 +12,12 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 
 //adapter for recycleView for search clinics
-class FilterListAdapter(private val dataSet: List<DialogFilterListItem>,
-                        private val context: Context,
-                        private val listener: FilterListDialog.FilterListDialogListener):
-    RecyclerView.Adapter<FilterListAdapter.ViewHolder>() {
+class FilterListDialogAdapter(private val dataSet: List<DialogFilterListItem>,
+                              private val listener: FilterListDialog.FilterListDialogListener):
+    RecyclerView.Adapter<FilterListDialogAdapter.ViewHolder>() {
+
+    lateinit var context: Context
+
       class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val titleTV: TextView = view.findViewById(R.id.filters_item_title)
         val chipGroup: ChipGroup = view.findViewById(R.id.filters_item_chip_group)
@@ -23,8 +25,13 @@ class FilterListAdapter(private val dataSet: List<DialogFilterListItem>,
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.search_dialog_list_item, parent, false)
+                .inflate(R.layout.search_filter_dialog_list_item, parent, false)
         return ViewHolder(view)
+    }
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        context = recyclerView.context
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

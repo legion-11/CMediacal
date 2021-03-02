@@ -47,7 +47,6 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
                 .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-
         emailET = findViewById(R.id.emailET)
         passwordET = findViewById(R.id.passwordET)
         progressBar = findViewById(R.id.log_in_progress_bar)
@@ -80,7 +79,8 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
         super.onStart()
         val user = mAuth.currentUser
         if (user != null && user.isEmailVerified) {
-            Log.i("auth", "onStart: user registered")
+            Log.i("auth", "onStart: user ${user.email} registered")
+
             intent = Intent(this@MainActivity, LandingActivity::class.java)
             startActivity(intent)
         } else {

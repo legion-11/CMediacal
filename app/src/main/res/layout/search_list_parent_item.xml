@@ -36,52 +36,81 @@
 
 
             <TextView
-                android:id="@+id/search_item_name"
+                android:id="@+id/search_item_name_tv"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_marginStart="4dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="24dp"
                 android:layout_toEndOf="@+id/search_item_clinic_card"
                 android:fontFamily="sans-serif-condensed"
                 android:text="@string/placeholder"
                 android:textColor="@android:color/black"
                 android:textSize="20sp"
                 android:textStyle="normal"
-                app:layout_constraintBottom_toBottomOf="@+id/search_item_clinic_card"
-                app:layout_constraintEnd_toStartOf="@+id/search_item_total_price"
+                app:layout_constraintEnd_toStartOf="@+id/search_item_info_btn"
                 app:layout_constraintStart_toEndOf="@+id/search_item_clinic_card"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.25"
                 app:layout_constraintVertical_chainStyle="packed" />
 
             <TextView
-                android:id="@+id/search_item_address"
+                android:id="@+id/search_item_address_tv"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/search_item_name"
+                android:layout_below="@+id/search_item_name_tv"
                 android:layout_marginStart="4dp"
                 android:layout_toEndOf="@+id/search_item_clinic_card"
                 android:fontFamily="sans-serif-light"
                 android:text="@string/placeholder"
                 android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="@+id/search_item_name"
+                app:layout_constraintEnd_toEndOf="@+id/search_item_name_tv"
                 app:layout_constraintStart_toEndOf="@+id/search_item_clinic_card"
-                app:layout_constraintTop_toBottomOf="@+id/search_item_name" />
+                app:layout_constraintTop_toBottomOf="@+id/search_item_name_tv" />
 
             <TextView
-                android:id="@+id/search_item_total_price"
+                android:id="@+id/search_item_total_text_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/search_item_name"
-                android:layout_alignBottom="@+id/search_item_name"
+                android:text="@string/total_price"
+                app:layout_constraintStart_toStartOf="@+id/search_item_name_tv"
+                app:layout_constraintTop_toBottomOf="@+id/search_item_address_tv" />
+
+            <TextView
+                android:id="@+id/search_item_total_price_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/search_item_name_tv"
+                android:layout_alignBottom="@+id/search_item_name_tv"
                 android:layout_marginEnd="8dp"
                 android:fontFamily="sans-serif-medium"
                 android:gravity="center"
                 android:text="@string/placeholder"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <ToggleButton
+                android:id="@+id/search_item_bookmarks_tglBtn"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/toggle_bookmarks"
+                android:textOff=""
+                android:textOn=""
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="@+id/search_item_name_tv" />
+<!--TODO change color when selected-->
+            <ImageButton
+                android:id="@+id/search_item_info_btn"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="4dp"
+                android:background="@null"
+                android:contentDescription="@string/clinic_info_button_image"
+                android:scaleType="center"
+                app:layout_constraintEnd_toStartOf="@+id/search_item_bookmarks_tglBtn"
+                app:layout_constraintTop_toTopOf="@+id/search_item_name_tv"
+                app:srcCompat="@android:drawable/ic_info" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -90,7 +119,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="80dp"
-            android:layout_marginTop="8dp" />
+            android:paddingTop="8dp" />
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

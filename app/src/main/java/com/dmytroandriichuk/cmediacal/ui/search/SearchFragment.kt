@@ -8,35 +8,33 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.dmytroandriichuk.cmediacal.CMedicalApplication
 import com.dmytroandriichuk.cmediacal.LandingActivity
 import com.dmytroandriichuk.cmediacal.R
+import com.dmytroandriichuk.cmediacal.db.entity.Clinic
 import com.dmytroandriichuk.cmediacal.ui.search.dialog.FilterListDialog
 import com.dmytroandriichuk.cmediacal.ui.search.model.SearchListParentItem
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 
 //first fragment of landing screen, provides search for clinics depending on search options
-class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener {
+class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, SearchListParentAdapter.BookmarksListener {
 
-    private lateinit var searchViewModel: SearchViewModel
-    private lateinit var database: FirebaseFirestore
+    private val searchViewModel: SearchViewModel by viewModels {
+        SearchViewModel.SearchViewModelFactory((activity?.application as CMedicalApplication).repository)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        searchViewModel = ViewModelProvider(this).get(SearchViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_search, container, false)
-        database = FirebaseFirestore.getInstance()
-
-        //allows each fragment have it's own toolbar
+        //allows fragment have it's own toolbar
         setHasOptionsMenu(true)
         val mToolbar = root.findViewById<Toolbar>(R.id.toolbar)
         (activity as LandingActivity).setSupportActionBar(mToolbar)
@@ -46,11 +44,10 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener {
         val recyclerView = root.findViewById<RecyclerView>(R.id.searchListRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(activity)
 
-        recyclerView.adapter = SearchListParentAdapter(ArrayList(), recyclerView.context)
+        recyclerView.adapter = SearchListParentAdapter(ArrayList(), this)
         searchViewModel.clinicItems.observe(viewLifecycleOwner, {
             (recyclerView.adapter as SearchListParentAdapter).changeDataSet(it)
         })
-
 
         //provide search through recycleView
         val searchView: SearchView = root.findViewById(R.id.searchView)
@@ -119,33 +116,21 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener {
     //start filtering list by tags
     override fun startQuery() {
         Log.i(TAG, "startQuery: ")
-        // TODO add tags
-        val ref = database.collection("Dental Clinics")
-        var query:Query? = null
-        if (provinces.isNotEmpty()){
-            query = ref.whereIn("Province", provinces)
-        }
-        for (filter in filters){
-            query = query?.whereEqualTo("tag $filter", true) ?: ref.whereEqualTo("tag $filter", true)
-        }
-        query?.let {
-            query.get().addOnSuccessListener { docs ->
-                searchViewModel.setClinicItems(docs, filters)
-            }
-        }
-
+        searchViewModel.searchQuery(provinces, filters)
     }
 
     //add tag for filtering
     override fun setFilter(filter: String) {
         Log.i(TAG, "setFilter: $filter")
         filters.add(filter)
+        Log.i(TAG, "setFilter: $filters")
     }
 
     //remove filtering tag
     override fun removeFilter(filter: String) {
         Log.i(TAG, "removeFilter: $filter")
         filters.remove(filter)
+        Log.i(TAG, "removeFilter: $filters")
     }
 
     //add province tag
@@ -160,5 +145,27 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener {
         Log.i(TAG, "removeProvince: $filter")
         provinces.remove(filter)
         Log.i(TAG, "removeProvince: $provinces")
+    }
+
+    override fun addBookmark(item: SearchListParentItem) {
+        Log.i(TAG, "addBookmark: $item")
+        val clinic = Clinic(
+            item.id,
+            (activity as LandingActivity).mAuth.currentUser?.email ?: "default",
+            item.name,
+            item.address
+        )
+        searchViewModel.insert(clinic)
+    }
+
+    override fun removeBookmark(item: SearchListParentItem) {
+        Log.i(TAG, "removeBookmark: $item")
+        val clinic = Clinic(
+            item.id,
+            (activity as LandingActivity).mAuth.currentUser?.email ?: "default",
+            item.name,
+            item.address
+        )
+        searchViewModel.delete(clinic)
     }
 }

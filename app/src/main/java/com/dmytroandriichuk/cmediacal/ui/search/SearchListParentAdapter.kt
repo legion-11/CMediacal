@@ -1,14 +1,10 @@
 package com.dmytroandriichuk.cmediacal.ui.search
 
-import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Filter
-import android.widget.Filterable
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.RecycledViewPool
@@ -20,13 +16,12 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 //first adapter for the recycleView with nested items
-class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>,
-                              private val context: Context):
+class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>, private val bookmarksListener: BookmarksListener):
     RecyclerView.Adapter<SearchListParentAdapter.ViewHolder>(),
     Filterable {
     private var dataSetFiltered: ArrayList<SearchListParentItem>
     private var dataSetFull = ArrayList(dataSet.sortedWith(compareBy({ it.totalPrice }, { it.name })))
-
+    private lateinit var textFormat: String
     // An object of RecyclerView.RecycledViewPool
     // is created to share the Views
     // between the child and
@@ -45,15 +40,9 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>,
         Log.i("TAG", "changeDataSet: $dataSetFull")
     }
 
-    // This class is to initialize
-    // the Views present in
-    // the parent RecyclerView
-    class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        val nameTV: TextView = view.findViewById(R.id.search_item_name)
-        val addressTV: TextView = view.findViewById(R.id.search_item_address)
-        val image: ImageView = view.findViewById(R.id.search_item_clinic_image)
-        val totalPrice: TextView = view.findViewById(R.id.search_item_total_price)
-        val recyclerView: RecyclerView = view.findViewById(R.id.searchItemPricesRV)
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        textFormat = recyclerView.context.resources.getString(R.string.price_format)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -69,24 +58,42 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>,
         holder.nameTV.text = item.name
         holder.addressTV.text = item.address
         Picasso.get().load(item.imageURL).resize(80, 80).centerCrop().into(holder.image)
-        holder.totalPrice.text = context.resources.getString(R.string.price_format).format(item.totalPrice)
+        holder.totalPrice.text = if (item.totalPrice != 0.0) textFormat.format(item.totalPrice) else ""
+
+
+        holder.bookmarksButton.setOnCheckedChangeListener { _, isChecked ->
+            item.bookmarked = !item.bookmarked
+            if (isChecked){
+                bookmarksListener.addBookmark(dataSetFiltered[position])
+            } else {
+                bookmarksListener.removeBookmark(dataSetFiltered[position])
+            }
+        }
+
+        holder.infoButton.setOnClickListener {
+            //TODO
+        }
 
         // Create an instance of the child
         // item view adapter and set its
         // adapter, layout manager and RecyclerViewPool
         val list = item.servicesPrices.map { SearchListChildItem(it.key, it.value) } as ArrayList
-        val layoutManager = LinearLayoutManager(holder.recyclerView.context)
-        layoutManager.initialPrefetchItemCount = list.size
-        holder.recyclerView.layoutManager = layoutManager
-        holder.recyclerView.adapter = SearchListChildAdapter(list, context)
-        holder.recyclerView.setRecycledViewPool(viewPool)
-        holder.recyclerView.visibility = if (item.expanded) View.VISIBLE else View.GONE
+        if (list.isNotEmpty()) {
+            val layoutManager = LinearLayoutManager(holder.recyclerView.context)
+            layoutManager.initialPrefetchItemCount = list.size
+            holder.recyclerView.layoutManager = layoutManager
 
-        //expand item on click
-        holder.view.setOnClickListener {
-            item.expanded = !item.expanded
-            notifyItemChanged(position)
+            holder.recyclerView.adapter = SearchListChildAdapter(list)
+            holder.recyclerView.setRecycledViewPool(viewPool)
+            holder.recyclerView.visibility = if (item.expanded) View.VISIBLE else View.GONE
+
+            //expand item on click
+            holder.view.setOnClickListener {
+                item.expanded = !item.expanded
+                notifyItemChanged(position)
+            }
         }
+
     }
 
     //number of items in recycleView
@@ -119,5 +126,23 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>,
                 notifyDataSetChanged()
             }
         }
+    }
+
+    // This class is to initialize
+    // the Views present in
+    // the parent RecyclerView
+    class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+        val nameTV: TextView = view.findViewById(R.id.search_item_name_tv)
+        val addressTV: TextView = view.findViewById(R.id.search_item_address_tv)
+        val image: ImageView = view.findViewById(R.id.search_item_clinic_image)
+        val totalPrice: TextView = view.findViewById(R.id.search_item_total_price_tv)
+        val bookmarksButton: ToggleButton = view.findViewById(R.id.search_item_bookmarks_tglBtn)
+        val infoButton: ImageButton = view.findViewById(R.id.search_item_info_btn)
+        val recyclerView: RecyclerView = view.findViewById(R.id.searchItemPricesRV)
+    }
+
+    interface BookmarksListener {
+        fun addBookmark(item: SearchListParentItem)
+        fun removeBookmark(item: SearchListParentItem)
     }
 }

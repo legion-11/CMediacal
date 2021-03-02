@@ -20,11 +20,13 @@ import kotlin.system.exitProcess
 
 class LandingActivity : AppCompatActivity() {
 
+    lateinit var mAuth: FirebaseAuth
     private var startTime: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_landing)
+        mAuth = FirebaseAuth.getInstance()
 
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
@@ -33,6 +35,7 @@ class LandingActivity : AppCompatActivity() {
 //        val appBarConfiguration = AppBarConfiguration(setOf(
 //                R.id.navigation_search, R.id.navigation_leave_review, R.id.navigation_favourites))
 //        setupActionBarWithNavController(navController, appBarConfiguration)
+
         navView.setupWithNavController(navController)
     }
 

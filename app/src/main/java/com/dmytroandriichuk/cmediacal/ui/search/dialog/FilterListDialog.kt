@@ -46,7 +46,7 @@ class FilterListDialog(private val listener: FilterListDialogListener): AppCompa
             }
 
             filterResources.recycle()
-            recyclerView.adapter = FilterListAdapter(filterItems, recyclerView.context, listener)
+            recyclerView.adapter = FilterListDialogAdapter(filterItems, listener)
             builder.setPositiveButton("Apply") {
                         dialog, _ ->  listener.startQuery()
                     }
