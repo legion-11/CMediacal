@@ -37,7 +37,7 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>, private 
         dataSetFull = ArrayList(dataSet.sortedWith(compareBy({ it.totalPrice }, { it.name })))
         dataSetFiltered = ArrayList(dataSetFull)
         notifyDataSetChanged()
-        Log.i("TAG", "changeDataSet: $dataSetFull")
+        Log.d("TAG", "changeDataSet: $dataSetFull")
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -60,10 +60,10 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>, private 
         Picasso.get().load(item.imageURL).resize(80, 80).centerCrop().into(holder.image)
         holder.totalPrice.text = if (item.totalPrice != 0.0) textFormat.format(item.totalPrice) else ""
 
-
-        holder.bookmarksButton.setOnCheckedChangeListener { _, isChecked ->
+        holder.bookmarksButton.isChecked = item.bookmarked
+        holder.bookmarksButton.setOnClickListener {
             item.bookmarked = !item.bookmarked
-            if (isChecked){
+            if (item.bookmarked){
                 bookmarksListener.addBookmark(dataSetFiltered[position])
             } else {
                 bookmarksListener.removeBookmark(dataSetFiltered[position])
@@ -88,12 +88,17 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>, private 
             holder.recyclerView.visibility = if (item.expanded) View.VISIBLE else View.GONE
 
             //expand item on click
-            holder.view.setOnClickListener {
+
+        } else {
+            holder.recyclerView.visibility = View.GONE
+        }
+
+        holder.view.setOnClickListener {
+            if (list.isNotEmpty()){
                 item.expanded = !item.expanded
                 notifyItemChanged(position)
             }
         }
-
     }
 
     //number of items in recycleView

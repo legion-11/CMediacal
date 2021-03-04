@@ -17,8 +17,7 @@ class FilterListDialogAdapter(private val dataSet: List<DialogFilterListItem>,
     RecyclerView.Adapter<FilterListDialogAdapter.ViewHolder>() {
 
     lateinit var context: Context
-
-      class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val titleTV: TextView = view.findViewById(R.id.filters_item_title)
         val chipGroup: ChipGroup = view.findViewById(R.id.filters_item_chip_group)
     }
@@ -55,34 +54,32 @@ class FilterListDialogAdapter(private val dataSet: List<DialogFilterListItem>,
             //add padding so chips would not change their size on click due to icon appearance
 
             chip.setOnCheckedChangeListener { buttonView, isChecked ->
-                if(isChecked) {
-                    if (position == 0) {
+                if (position == 0) {
+                    if (isChecked) {
                         if (listener.provinces.size <= 9){
                             listener.setProvince(filter)
                         } else {
                             buttonView.isChecked = false
-                            chip.chipStartPadding = 37f
-                            chip.chipEndPadding = 37f
-                            return@setOnCheckedChangeListener
                         }
                     } else {
-                        listener.setFilter("${item.title}: $filter")
-                    }
-                    chip.chipStartPadding = 8f
-                    chip.chipEndPadding = 0f
-                } else {
-                    if (position == 0) {
                         listener.removeProvince(filter)
+                    }
+                } else {
+                    if (isChecked) {
+                        listener.setFilter("${item.title}: $filter")
                     } else {
                         listener.removeFilter("${item.title}: $filter")
                     }
-                    chip.chipStartPadding = 37f
-                    chip.chipEndPadding = 37f
                 }
+                changeChipPadding(chip)
             }
             holder.chipGroup.addView(chip)
         }
     }
     override fun getItemCount(): Int = dataSet.size
 
+    private fun changeChipPadding(chip: Chip) {
+        chip.chipStartPadding = if (chip.isChecked) 8f else 37f
+        chip.chipEndPadding = if (chip.isChecked) 0f else 37f
+    }
 }

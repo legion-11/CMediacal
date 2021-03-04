@@ -45,7 +45,7 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
         recyclerView.layoutManager = LinearLayoutManager(activity)
 
         recyclerView.adapter = SearchListParentAdapter(ArrayList(), this)
-        searchViewModel.clinicItems.observe(viewLifecycleOwner, {
+        searchViewModel.searchItems.observe(viewLifecycleOwner, {
             (recyclerView.adapter as SearchListParentAdapter).changeDataSet(it)
         })
 
@@ -62,6 +62,9 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
             }
         })
 
+        // get all from firebase db
+        startQuery()
+
         return root
     }
 
@@ -75,7 +78,7 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.filter_list -> {
             // User chose the "Filter" item, show the app filter dialog to specify search...
-            Log.i("SearchFragment", "onOptionsItemSelected: filter dialog")
+            Log.d("SearchFragment", "onOptionsItemSelected: filter dialog")
             val dialog = FilterListDialog(this)
 
             val manager: FragmentManager = (activity as LandingActivity).supportFragmentManager
@@ -86,7 +89,7 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
 
         android.R.id.home -> {
             // User chose the "Log Out" action
-            Log.i("SearchFragment", "onOptionsItemSelected: Home")
+            Log.d("SearchFragment", "onOptionsItemSelected: Home")
             FirebaseAuth.getInstance().signOut()
             //if you do not sign out from google you can not choose other user
             GoogleSignIn.getClient(
@@ -115,43 +118,43 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
 
     //start filtering list by tags
     override fun startQuery() {
-        Log.i(TAG, "startQuery: ")
+        Log.d(TAG, "startQuery: ")
         searchViewModel.searchQuery(provinces, filters)
     }
 
     //add tag for filtering
     override fun setFilter(filter: String) {
-        Log.i(TAG, "setFilter: $filter")
+        Log.d(TAG, "setFilter: $filter")
         filters.add(filter)
-        Log.i(TAG, "setFilter: $filters")
+        Log.d(TAG, "setFilter: $filters")
     }
 
     //remove filtering tag
     override fun removeFilter(filter: String) {
-        Log.i(TAG, "removeFilter: $filter")
+        Log.d(TAG, "removeFilter: $filter")
         filters.remove(filter)
-        Log.i(TAG, "removeFilter: $filters")
+        Log.d(TAG, "removeFilter: $filters")
     }
 
     //add province tag
     override fun setProvince(filter: String) {
-        Log.i(TAG, "setProvince: $filter")
+        Log.d(TAG, "setProvince: $filter")
         provinces.add(filter)
-        Log.i(TAG, "setProvince: $provinces")
+        Log.d(TAG, "setProvince: $provinces")
     }
 
     //remove province tag
     override fun removeProvince(filter: String) {
-        Log.i(TAG, "removeProvince: $filter")
+        Log.d(TAG, "removeProvince: $filter")
         provinces.remove(filter)
-        Log.i(TAG, "removeProvince: $provinces")
+        Log.d(TAG, "removeProvince: $provinces")
     }
 
     override fun addBookmark(item: SearchListParentItem) {
-        Log.i(TAG, "addBookmark: $item")
+        Log.d(TAG, "addBookmark: $item")
         val clinic = Clinic(
             item.id,
-            (activity as LandingActivity).mAuth.currentUser?.email ?: "default",
+            searchViewModel.getUser(),
             item.name,
             item.address
         )
@@ -159,10 +162,10 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
     }
 
     override fun removeBookmark(item: SearchListParentItem) {
-        Log.i(TAG, "removeBookmark: $item")
+        Log.d(TAG, "removeBookmark: $item")
         val clinic = Clinic(
             item.id,
-            (activity as LandingActivity).mAuth.currentUser?.email ?: "default",
+                searchViewModel.getUser(),
             item.name,
             item.address
         )

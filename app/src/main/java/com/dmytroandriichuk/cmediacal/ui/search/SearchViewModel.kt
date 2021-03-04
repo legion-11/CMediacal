@@ -1,12 +1,10 @@
 package com.dmytroandriichuk.cmediacal.ui.search
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import com.dmytroandriichuk.cmediacal.db.DatabaseRepository
 import com.dmytroandriichuk.cmediacal.db.entity.Clinic
 import com.dmytroandriichuk.cmediacal.ui.search.model.SearchListParentItem
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QuerySnapshot
@@ -15,8 +13,26 @@ import com.google.firebase.firestore.QuerySnapshot
 class SearchViewModel(private val localDBRepository: DatabaseRepository) : ViewModel() {
 
     private val firebaseFirestoreDB = FirebaseFirestore.getInstance()
+    private val mAuth = FirebaseAuth.getInstance()
 
-    private val _clinicItems = MutableLiveData<ArrayList<SearchListParentItem>>()
+    private val _searchItems = MutableLiveData<ArrayList<SearchListParentItem>>()
+    val searchItems: LiveData<ArrayList<SearchListParentItem>> = _searchItems
+    private val _bookmarks: LiveData<Array<Clinic>> = localDBRepository.getAllClinics(getUser()).asLiveData()
+    private val _observer = Observer { array: Array<Clinic> -> bookmarks = array }
+    private lateinit var bookmarks: Array<Clinic>
+
+    init {
+        _bookmarks.observeForever (_observer)
+    }
+
+    override fun onCleared() {
+        _bookmarks.removeObserver(_observer)
+        super.onCleared()
+    }
+
+    fun getUser(): String {
+        return mAuth.currentUser?.email ?: "default"
+    }
 
     fun insert(clinic: Clinic) {
         localDBRepository.insert(clinic)
@@ -33,19 +49,17 @@ class SearchViewModel(private val localDBRepository: DatabaseRepository) : ViewM
             query = ref.whereIn("Province", provinces)
         }
         for (filter in filters){
-            query = query?.whereEqualTo("tag $filter", true) ?: ref.whereEqualTo("tag $filter", true)
+            query = (query ?: ref).whereEqualTo("tag $filter", true)
         }
 
-        //TODO add search if no filters
-        query?.let {
-            query.get().addOnSuccessListener { docs ->
-                setClinicItems(docs, filters)
-            }
+        (query ?: ref).get().addOnSuccessListener {  docs ->
+            setSearchItems(docs, filters)
         }
+
     }
 
-    private fun setClinicItems(query: QuerySnapshot, filters: ArrayList<String>){
-        _clinicItems.value = query.map { doc ->
+    private fun setSearchItems(query: QuerySnapshot, filters: ArrayList<String>){
+        _searchItems.value = query.map { doc ->
             SearchListParentItem(doc.id).apply {
                 (doc["name"] as String?)?.let { name = it }
                 (doc["address"] as String?)?.let { address = it }
@@ -54,11 +68,12 @@ class SearchViewModel(private val localDBRepository: DatabaseRepository) : ViewM
                     doc[it] as Double
                 })
                 //TODO bookmark check
-
+                if (doc.id in bookmarks.map { it.id }){
+                    bookmarked = true
+                }
             }
         } as ArrayList
     }
-    val clinicItems: LiveData<ArrayList<SearchListParentItem>> = _clinicItems
 
     class SearchViewModelFactory(private val repository: DatabaseRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

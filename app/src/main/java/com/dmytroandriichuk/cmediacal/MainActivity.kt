@@ -79,12 +79,12 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
         super.onStart()
         val user = mAuth.currentUser
         if (user != null && user.isEmailVerified) {
-            Log.i("auth", "onStart: user ${user.email} registered")
+            Log.d("auth", "onStart: user ${user.email} registered")
 
             intent = Intent(this@MainActivity, LandingActivity::class.java)
             startActivity(intent)
         } else {
-            Log.i("auth", "onStart: user not registered")
+            Log.d("auth", "onStart: user not registered")
         }
     }
 
@@ -225,20 +225,20 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
             if (capabilities != null) {
                 when {
                     capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
-                        Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
+                        Log.d("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
                         return true
                     }
                     capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
-                        Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
+                        Log.d("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
                         return true
                     }
                     capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> {
-                        Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
+                        Log.d("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
                         return true
                     }
                 }
             }
-            Log.i("Internet", "No network")
+            Log.d("Internet", "No network")
             return false
         }
     }

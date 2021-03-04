@@ -3,6 +3,7 @@ package com.dmytroandriichuk.cmediacal.db.dao
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.dmytroandriichuk.cmediacal.db.entity.Clinic
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ClinicDao {
@@ -19,6 +20,6 @@ interface ClinicDao {
     suspend fun delete(clinic: Clinic)
 
     @Query("SELECT * FROM clinic WHERE userEmail = :userEmail")
-    fun getAll(userEmail: String?): LiveData<Clinic?>
+    fun getAll(userEmail: String?): Flow<Array<Clinic>>
 
 }

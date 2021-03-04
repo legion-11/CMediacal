@@ -4,10 +4,10 @@ import com.dmytroandriichuk.cmediacal.db.dao.ClinicDao
 import com.dmytroandriichuk.cmediacal.db.entity.Clinic
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 class DatabaseRepository(private val clinicDao: ClinicDao) {
-
 
     fun insert(clinic: Clinic) {
         CoroutineScope(Dispatchers.IO).launch { clinicDao.insert(clinic) }
@@ -20,7 +20,7 @@ class DatabaseRepository(private val clinicDao: ClinicDao) {
         CoroutineScope(Dispatchers.IO).launch { clinicDao.delete(clinic) }
     }
 
-    fun getAllClinics(userEmail: String?) {
-        CoroutineScope(Dispatchers.IO).launch { clinicDao.getAll(userEmail) }
+    fun getAllClinics(userEmail: String?): Flow<Array<Clinic>> {
+        return clinicDao.getAll(userEmail)
     }
 }
