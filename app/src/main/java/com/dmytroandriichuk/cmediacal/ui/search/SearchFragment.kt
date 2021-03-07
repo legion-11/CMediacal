@@ -3,12 +3,12 @@ package com.dmytroandriichuk.cmediacal.ui.search
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.view.animation.AnimationUtils
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -56,6 +56,28 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
         searchViewModel.searchItems.observe(viewLifecycleOwner, {
             (recyclerView.adapter as SearchListParentAdapter).changeDataSet(it)
         })
+
+//        /**
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            var isViewShown = true
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                when {
+                    dy > 0 && isViewShown -> {
+                        isViewShown = false
+                        mToolbar.animate().translationY(-mToolbar.height.toFloat()).duration = 200
+//                        mToolbar.visibility = View.GONE
+                    }
+                    dy < 0 && !isViewShown ->{
+                        isViewShown = true
+                        mToolbar.animate().translationX(0f).translationY(0f).duration = 200
+//                        mToolbar.visibility = View.VISIBLE
+                    }
+                }
+            }
+        })
+//        */
 
         //provide search through recycleView
         val searchView: SearchView = root.findViewById(R.id.searchView)

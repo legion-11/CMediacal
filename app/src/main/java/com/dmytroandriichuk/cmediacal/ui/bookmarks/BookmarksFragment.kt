@@ -1,7 +1,6 @@
 package com.dmytroandriichuk.cmediacal.ui.bookmarks
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,8 +10,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dmytroandriichuk.cmediacal.CMedicalApplication
 import com.dmytroandriichuk.cmediacal.R
+import com.dmytroandriichuk.cmediacal.ui.bookmarks.model.ClinicListItem
 
-class BookmarksFragment : Fragment() {
+class BookmarksFragment : Fragment(), ClinicListParentAdapter.BookmarksListener {
 
     private val bookmarksViewModel: BookmarksViewModel by viewModels {
         BookmarksViewModel.BookmarksViewModelFactory((activity?.application as CMedicalApplication).repository)
@@ -26,12 +26,19 @@ class BookmarksFragment : Fragment() {
         val root = inflater.inflate(R.layout.fragment_bookmarks, container, false)
         val recyclerView = root.findViewById<RecyclerView>(R.id.bookmarksRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(activity)
-
-        bookmarksViewModel.bookmarks.observe(viewLifecycleOwner, {
-            for (i in it) {
-                Log.d("TAG", "onCreateView: $i")
-            }
+        recyclerView.adapter = ClinicListParentAdapter(ArrayList(), this)
+        bookmarksViewModel.bookmarks.observe(viewLifecycleOwner, { arrayOfClinics ->
+            val listItems = ArrayList(arrayOfClinics.map { ClinicListItem(it, bookmarked = true) })
+            (recyclerView.adapter as ClinicListParentAdapter).changeDataSet(listItems)
         })
         return root
+    }
+
+    override fun addBookmark(item: ClinicListItem) {
+        bookmarksViewModel.insert(item.clinic)
+    }
+
+    override fun removeBookmark(item: ClinicListItem) {
+        bookmarksViewModel.delete(item.clinic)
     }
 }
