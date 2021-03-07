@@ -24,6 +24,7 @@ class SearchViewModel(private val localDBRepository: DatabaseRepository) : ViewM
 
     val provinces: ArrayList<String> = ArrayList()
     val filters: ArrayList<String> = ArrayList()
+    var firstCall = true
 
     init {
         _bookmarks.observeForever (_observer)

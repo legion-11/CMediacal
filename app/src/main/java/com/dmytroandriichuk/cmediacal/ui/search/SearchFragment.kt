@@ -57,28 +57,6 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
             (recyclerView.adapter as SearchListParentAdapter).changeDataSet(it)
         })
 
-//        /**
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            var isViewShown = true
-
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                when {
-                    dy > 0 && isViewShown -> {
-                        isViewShown = false
-                        mToolbar.animate().translationY(-mToolbar.height.toFloat()).duration = 200
-//                        mToolbar.visibility = View.GONE
-                    }
-                    dy < 0 && !isViewShown ->{
-                        isViewShown = true
-                        mToolbar.animate().translationX(0f).translationY(0f).duration = 200
-//                        mToolbar.visibility = View.VISIBLE
-                    }
-                }
-            }
-        })
-//        */
-
         //provide search through recycleView
         val searchView: SearchView = root.findViewById(R.id.searchView)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -93,8 +71,9 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
         })
 
         // get all from firebase db
-        if (searchViewModel.filters.isEmpty() && searchViewModel.provinces.isEmpty()){
+        if (searchViewModel.firstCall){
             startQuery()
+            searchViewModel.firstCall = false
         }
 
         return root

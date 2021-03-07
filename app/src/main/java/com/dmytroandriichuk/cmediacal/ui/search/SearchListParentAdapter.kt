@@ -142,7 +142,7 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>, private 
     override fun onViewRecycled(holder: ViewHolder) {
         holder.clearView()
         super.onViewRecycled(holder)
-
+        Log.d("SearchListParentAdapter", "onViewRecycled: ")
     }
 
     // This class is to initialize
