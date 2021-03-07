@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="4dp"
@@ -73,8 +74,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/total_price"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/search_item_name_tv"
-                app:layout_constraintTop_toBottomOf="@+id/search_item_address_tv" />
+                app:layout_constraintTop_toBottomOf="@+id/search_item_address_tv"
+                app:layout_constraintVertical_bias="0.90999997" />
 
             <TextView
                 android:id="@+id/search_item_total_price_tv"
@@ -114,12 +117,26 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/searchItemPricesRV"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="80dp"
-            android:paddingTop="8dp" />
+            android:orientation="vertical">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/search_item_prices_rv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="80dp"
+                android:paddingTop="8dp" />
+
+            <com.google.android.gms.maps.MapView
+                android:id="@+id/search_lite_list_row_map"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:clickable="false"
+                map:liteMode="true"
+                map:mapType="none" />
+        </LinearLayout>
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

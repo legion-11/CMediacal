@@ -9,12 +9,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dmytroandriichuk.cmediacal.CMedicalApplication
 import com.dmytroandriichuk.cmediacal.LandingActivity
 import com.dmytroandriichuk.cmediacal.R
 import com.dmytroandriichuk.cmediacal.db.entity.Clinic
+import com.dmytroandriichuk.cmediacal.db.entity.ServicePrice
 import com.dmytroandriichuk.cmediacal.ui.search.dialog.FilterListDialog
 import com.dmytroandriichuk.cmediacal.ui.search.model.SearchListParentItem
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -24,8 +26,13 @@ import com.google.firebase.auth.FirebaseAuth
 //first fragment of landing screen, provides search for clinics depending on search options
 class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, SearchListParentAdapter.BookmarksListener {
 
-    private val searchViewModel: SearchViewModel by viewModels {
-        SearchViewModel.SearchViewModelFactory((activity?.application as CMedicalApplication).repository)
+    private val searchViewModel: SearchViewModel by lazy {
+        val activity = requireNotNull(this.activity) {
+            "You can only access the viewModel after onActivityCreated()"
+        }
+        ViewModelProvider(activity as LandingActivity,
+                SearchViewModel.SearchViewModelFactory((activity.application as CMedicalApplication).repository))
+                .get(SearchViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -34,6 +41,7 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_search, container, false)
+
         //allows fragment have it's own toolbar
         setHasOptionsMenu(true)
         val mToolbar = root.findViewById<Toolbar>(R.id.toolbar)
@@ -63,7 +71,9 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
         })
 
         // get all from firebase db
-        startQuery()
+        if (searchViewModel.filters.isEmpty() && searchViewModel.provinces.isEmpty()){
+            startQuery()
+        }
 
         return root
     }
@@ -113,41 +123,41 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
         const val TAG: String = "SearchFragment"
     }
 
-    override var provinces: ArrayList<String> = ArrayList()
-    override var filters: ArrayList<String> = ArrayList()
+    override val filters: ArrayList<String> get() = searchViewModel.filters
+    override val provinces: ArrayList<String> get() = searchViewModel.provinces
 
     //start filtering list by tags
     override fun startQuery() {
         Log.d(TAG, "startQuery: ")
-        searchViewModel.searchQuery(provinces, filters)
+        searchViewModel.searchQuery()
     }
 
     //add tag for filtering
     override fun setFilter(filter: String) {
         Log.d(TAG, "setFilter: $filter")
-        filters.add(filter)
-        Log.d(TAG, "setFilter: $filters")
+        searchViewModel.filters.add(filter)
+        Log.d(TAG, "setFilter: ${searchViewModel.filters}")
     }
 
     //remove filtering tag
     override fun removeFilter(filter: String) {
         Log.d(TAG, "removeFilter: $filter")
-        filters.remove(filter)
-        Log.d(TAG, "removeFilter: $filters")
+        searchViewModel.filters.remove(filter)
+        Log.d(TAG, "removeFilter: ${searchViewModel.filters}")
     }
 
     //add province tag
     override fun setProvince(filter: String) {
         Log.d(TAG, "setProvince: $filter")
-        provinces.add(filter)
-        Log.d(TAG, "setProvince: $provinces")
+        searchViewModel.provinces.add(filter)
+        Log.d(TAG, "setProvince: ${searchViewModel.provinces}")
     }
 
     //remove province tag
     override fun removeProvince(filter: String) {
         Log.d(TAG, "removeProvince: $filter")
-        provinces.remove(filter)
-        Log.d(TAG, "removeProvince: $provinces")
+        searchViewModel.provinces.remove(filter)
+        Log.d(TAG, "removeProvince: ${searchViewModel.provinces}")
     }
 
     override fun addBookmark(item: SearchListParentItem) {
@@ -156,18 +166,25 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
             item.id,
             searchViewModel.getUser(),
             item.name,
-            item.address
+            item.address,
+            item.lat,
+            item.lng,
         )
         searchViewModel.insert(clinic)
+        for (servicePrice in item.servicesPrices) {
+            searchViewModel.insert(ServicePrice(0, servicePrice.key, servicePrice.value, clinic.crossRefId))
+        }
     }
 
     override fun removeBookmark(item: SearchListParentItem) {
         Log.d(TAG, "removeBookmark: $item")
         val clinic = Clinic(
             item.id,
-                searchViewModel.getUser(),
+            searchViewModel.getUser(),
             item.name,
-            item.address
+            item.address,
+            item.lat,
+            item.lng,
         )
         searchViewModel.delete(clinic)
     }

@@ -9,12 +9,14 @@ import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.dmytroandriichuk.cmediacal.MainActivity.Companion
 import com.dmytroandriichuk.cmediacal.MainActivity.Companion.isOnline
+import com.dmytroandriichuk.cmediacal.ui.search.SearchViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlin.system.exitProcess
 

@@ -5,17 +5,20 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.dmytroandriichuk.cmediacal.db.dao.ClinicDao
+import com.dmytroandriichuk.cmediacal.db.dao.ServicePriceDao
 import com.dmytroandriichuk.cmediacal.db.entity.Clinic
+import com.dmytroandriichuk.cmediacal.db.entity.ServicePrice
 
 
 @Database(
-    entities = [Clinic::class],
+    entities = [Clinic::class, ServicePrice::class],
     version = 1
 )
 //create singleton of db
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun clinicDao(): ClinicDao
+    abstract fun servicePriceDao(): ServicePriceDao
 
     companion object {
 

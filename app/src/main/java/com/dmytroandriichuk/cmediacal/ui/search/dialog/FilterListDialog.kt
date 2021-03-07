@@ -18,8 +18,8 @@ class FilterListDialog(private val listener: FilterListDialogListener): AppCompa
 
     //interface for filter click callback
     interface FilterListDialogListener {
-        var provinces: ArrayList<String>
-        var filters: ArrayList<String>
+        val provinces: ArrayList<String>
+        val filters: ArrayList<String>
         fun startQuery()
         fun setFilter(filter: String)
         fun removeFilter(filter: String)

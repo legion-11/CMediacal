@@ -3,6 +3,7 @@ package com.dmytroandriichuk.cmediacal.ui.search
 import androidx.lifecycle.*
 import com.dmytroandriichuk.cmediacal.db.DatabaseRepository
 import com.dmytroandriichuk.cmediacal.db.entity.Clinic
+import com.dmytroandriichuk.cmediacal.db.entity.ServicePrice
 import com.dmytroandriichuk.cmediacal.ui.search.model.SearchListParentItem
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -20,6 +21,9 @@ class SearchViewModel(private val localDBRepository: DatabaseRepository) : ViewM
     private val _bookmarks: LiveData<Array<Clinic>> = localDBRepository.getAllClinics(getUser()).asLiveData()
     private val _observer = Observer { array: Array<Clinic> -> bookmarks = array }
     private lateinit var bookmarks: Array<Clinic>
+
+    val provinces: ArrayList<String> = ArrayList()
+    val filters: ArrayList<String> = ArrayList()
 
     init {
         _bookmarks.observeForever (_observer)
@@ -42,7 +46,15 @@ class SearchViewModel(private val localDBRepository: DatabaseRepository) : ViewM
         localDBRepository.delete(clinic)
     }
 
-    fun searchQuery(provinces: ArrayList<String>, filters: ArrayList<String>){
+    fun insert(servicePrice: ServicePrice) {
+        localDBRepository.insert(servicePrice)
+    }
+
+    fun delete(servicePrice: ServicePrice) {
+        localDBRepository.delete(servicePrice)
+    }
+
+    fun searchQuery(){
         val ref = firebaseFirestoreDB.collection("Dental Clinics")
         var query: Query? = null
         if (provinces.isNotEmpty()){
@@ -59,6 +71,7 @@ class SearchViewModel(private val localDBRepository: DatabaseRepository) : ViewM
     }
 
     private fun setSearchItems(query: QuerySnapshot, filters: ArrayList<String>){
+        val bookmarksID = bookmarks.map { it.id }
         _searchItems.value = query.map { doc ->
             SearchListParentItem(doc.id).apply {
                 (doc["name"] as String?)?.let { name = it }
@@ -67,8 +80,11 @@ class SearchViewModel(private val localDBRepository: DatabaseRepository) : ViewM
                 updateServicesPrices(filters.associateWith {
                     doc[it] as Double
                 })
+
+                (doc["lat"] as Double?)?.let { lat = it }
+                (doc["lng"] as Double?)?.let { lng = it }
                 //TODO bookmark check
-                if (doc.id in bookmarks.map { it.id }){
+                if (doc.id in bookmarksID){
                     bookmarked = true
                 }
             }

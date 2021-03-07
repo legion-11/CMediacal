@@ -11,6 +11,9 @@ import androidx.recyclerview.widget.RecyclerView.RecycledViewPool
 import com.dmytroandriichuk.cmediacal.R
 import com.dmytroandriichuk.cmediacal.ui.search.model.SearchListChildItem
 import com.dmytroandriichuk.cmediacal.ui.search.model.SearchListParentItem
+import com.google.android.gms.maps.*
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.squareup.picasso.Picasso
 import java.util.*
 import kotlin.collections.ArrayList
@@ -22,6 +25,7 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>, private 
     private var dataSetFiltered: ArrayList<SearchListParentItem>
     private var dataSetFull = ArrayList(dataSet.sortedWith(compareBy({ it.totalPrice }, { it.name })))
     private lateinit var textFormat: String
+    private lateinit var totalPriceHeaderText: String
     // An object of RecyclerView.RecycledViewPool
     // is created to share the Views
     // between the child and
@@ -43,6 +47,7 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>, private 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         textFormat = recyclerView.context.resources.getString(R.string.price_format)
+        totalPriceHeaderText = recyclerView.context.resources.getString(R.string.total_price)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -59,6 +64,7 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>, private 
         holder.addressTV.text = item.address
         Picasso.get().load(item.imageURL).resize(80, 80).centerCrop().into(holder.image)
         holder.totalPrice.text = if (item.totalPrice != 0.0) textFormat.format(item.totalPrice) else ""
+        holder.totalPriceHeader.text = if (item.totalPrice != 0.0) totalPriceHeaderText else ""
 
         holder.bookmarksButton.isChecked = item.bookmarked
         holder.bookmarksButton.setOnClickListener {
@@ -74,6 +80,8 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>, private 
             //TODO
         }
 
+        holder.latLng = LatLng(item.lat, item.lng)
+        holder.setMapLocation()
         // Create an instance of the child
         // item view adapter and set its
         // adapter, layout manager and RecyclerViewPool
@@ -86,18 +94,15 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>, private 
             holder.recyclerView.adapter = SearchListChildAdapter(list)
             holder.recyclerView.setRecycledViewPool(viewPool)
             holder.recyclerView.visibility = if (item.expanded) View.VISIBLE else View.GONE
-
-            //expand item on click
-
         } else {
             holder.recyclerView.visibility = View.GONE
         }
 
+        holder.mapView.visibility = if (item.expanded) View.VISIBLE else View.GONE
+        //expand item on click
         holder.view.setOnClickListener {
-            if (list.isNotEmpty()){
-                item.expanded = !item.expanded
-                notifyItemChanged(position)
-            }
+            item.expanded = !item.expanded
+            notifyItemChanged(position)
         }
     }
 
@@ -131,19 +136,68 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>, private 
                 notifyDataSetChanged()
             }
         }
+
+    }
+
+    override fun onViewRecycled(holder: ViewHolder) {
+        holder.clearView()
+        super.onViewRecycled(holder)
+
     }
 
     // This class is to initialize
     // the Views present in
     // the parent RecyclerView
-    class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(val view: View) : RecyclerView.ViewHolder(view),
+        OnMapReadyCallback {
         val nameTV: TextView = view.findViewById(R.id.search_item_name_tv)
         val addressTV: TextView = view.findViewById(R.id.search_item_address_tv)
         val image: ImageView = view.findViewById(R.id.search_item_clinic_image)
+        val totalPriceHeader: TextView = view.findViewById(R.id.search_item_total_text_tv)
         val totalPrice: TextView = view.findViewById(R.id.search_item_total_price_tv)
         val bookmarksButton: ToggleButton = view.findViewById(R.id.search_item_bookmarks_tglBtn)
         val infoButton: ImageButton = view.findViewById(R.id.search_item_info_btn)
-        val recyclerView: RecyclerView = view.findViewById(R.id.searchItemPricesRV)
+        val recyclerView: RecyclerView = view.findViewById(R.id.search_item_prices_rv)
+        val mapView: MapView = view.findViewById(R.id.search_lite_list_row_map)
+
+        lateinit var latLng: LatLng
+        private lateinit var map: GoogleMap
+
+        init {
+            mapView.isClickable = false
+            with(mapView) {
+                // Initialise the MapView
+                onCreate(null)
+                // Set the map ready callback to receive the GoogleMap object
+                getMapAsync(this@ViewHolder)
+            }
+        }
+
+        fun setMapLocation() {
+            if (!::map.isInitialized) return
+            with(map) {
+                addMarker(MarkerOptions().position(latLng))
+                moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+                mapType = GoogleMap.MAP_TYPE_NORMAL
+            }
+        }
+
+        /** This function is called when we need to clear the map. */
+        fun clearView() {
+            with(map) {
+                // Clear the map and free up resources by changing the map type to none
+                clear()
+                mapType = GoogleMap.MAP_TYPE_NONE
+                Log.d("ViewHolder", "clearView: map cleared")
+            }
+        }
+
+        override fun onMapReady(googleMap: GoogleMap?) {
+            MapsInitializer.initialize(recyclerView.context)
+            // If map is not initialised properly
+            map = googleMap ?: return
+            setMapLocation()
+        }
     }
 
     interface BookmarksListener {

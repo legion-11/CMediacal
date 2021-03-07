@@ -5,12 +5,13 @@ import androidx.lifecycle.*
 import com.dmytroandriichuk.cmediacal.CMedicalApplication
 import com.dmytroandriichuk.cmediacal.db.DatabaseRepository
 import com.dmytroandriichuk.cmediacal.db.entity.Clinic
+import com.dmytroandriichuk.cmediacal.db.entity.ClinicAndServicePrices
 import com.dmytroandriichuk.cmediacal.ui.search.SearchViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 class BookmarksViewModel(private val localDBRepository: DatabaseRepository) : ViewModel() {
     private val mAuth = FirebaseAuth.getInstance()
-    val bookmarks: LiveData<Array<Clinic>> = localDBRepository.getAllClinics(getUser()).asLiveData()
+    val bookmarks: LiveData<Array<ClinicAndServicePrices>> = localDBRepository.getAllClinicsWithPrices(getUser()).asLiveData()
 
     private fun getUser(): String {
         return mAuth.currentUser?.email ?: "default"
