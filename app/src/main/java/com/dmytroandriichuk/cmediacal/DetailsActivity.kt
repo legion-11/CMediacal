@@ -1,12 +1,20 @@
 package com.dmytroandriichuk.cmediacal
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.res.TypedArray
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.dmytroandriichuk.cmediacal.data.DataHolder
+import com.dmytroandriichuk.cmediacal.db.entity.ServicePrice
+import com.dmytroandriichuk.cmediacal.fragments.search.SearchListParentAdapter
 import com.dmytroandriichuk.cmediacal.fragments.search.dialog.model.DialogFilterListItem
 import com.dmytroandriichuk.cmediacal.viewModel.DetailsViewModel
 import com.google.android.gms.maps.*
@@ -17,8 +25,6 @@ class DetailsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var latLng: LatLng
-
-
     private lateinit var detailsViewModel: DetailsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,6 +37,17 @@ class DetailsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        //TODO change placeholder
+        findViewById<TextView>(R.id.details_clinic_phone).text = "123123123"
+        val address = findViewById<TextView>(R.id.details_clinic_address)
+        address.text = clinicData.address
+        address.setOnClickListener {
+            val clip = ClipData.newPlainText("address", address.text)
+            clipboard.setPrimaryClip(clip)
+        }
+
 
         val titles: Array<String> = resources.getStringArray(R.array.filter_titles)
         val filterResources: TypedArray = resources.obtainTypedArray(R.array.filters_resources)
@@ -45,7 +62,6 @@ class DetailsActivity : AppCompatActivity(), OnMapReadyCallback {
                 "${item.title}: ${item.listOfFilters[i]}"
             }
         }.toTypedArray().flatten()
-
         detailsViewModel = ViewModelProvider(this,
                 DetailsViewModel.DetailsViewModelFactory(flattenFilers))
                 .get(DetailsViewModel::class.java)
@@ -56,9 +72,11 @@ class DetailsActivity : AppCompatActivity(), OnMapReadyCallback {
             getMapAsync(this@DetailsActivity)
         }
 
-        // obtain full cliinic data
+        val recyclerView = findViewById<RecyclerView>(R.id.details_clinic_recycler_view)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        // obtain full clinic data
         detailsViewModel.searchDoc.observe(this, {
-            Log.d("DetailsActivity", "onCreate: $it")
+            recyclerView.adapter = DetailsListAdapter(it.servicePrices)
         })
         detailsViewModel.getClinicData(clinicData.id)
     }

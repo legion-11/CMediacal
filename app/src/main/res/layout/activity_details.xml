@@ -3,7 +3,6 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:map="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
@@ -75,6 +74,7 @@
                         app:drawableStartCompat="@drawable/ic_address" />
 
                     <TextView
+                        android:id="@+id/details_clinic_address"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/placeholder"
@@ -105,6 +105,7 @@
                         app:drawableStartCompat="@drawable/ic_address" />
 
                     <TextView
+                        android:id="@+id/details_clinic_phone"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/placeholder"
@@ -135,7 +136,9 @@
                         app:drawableStartCompat="@drawable/ic_prices" />
 
                     <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/details_clinic_recycler_view"
                         android:layout_width="match_parent"
+                        android:nestedScrollingEnabled="false"
                         android:layout_height="match_parent"
                         android:layout_marginTop="8dp" />
 
@@ -147,11 +150,12 @@
     </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/details_floating_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
         android:contentDescription="@string/add_to_bookmarks"
-        android:layout_gravity="end|bottom"
         app:srcCompat="@drawable/ic_bookmark_off" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -60,9 +60,11 @@ class ClinicListParentAdapter(dataSet: ArrayList<ClinicListItem>, private val bo
         val datePreviousItem = if (position != 0) Date(dataSetFull[position-1].clinic.date) else Date(0)
         if (dateFormat.format(datePreviousItem) == dateFormat.format(date)){
             holder.dateTV.visibility = View.GONE
+            holder.dividerTop.visibility = View.GONE
         } else {
             holder.dateTV.text = dateFormat.format(date)
             holder.dateTV.visibility = View.VISIBLE
+            holder.dividerTop.visibility = if (position != 0) View.VISIBLE else View.GONE
         }
         holder.nameTV.text = item.clinic.name
         holder.addressTV.text = item.clinic.address
@@ -135,6 +137,7 @@ class ClinicListParentAdapter(dataSet: ArrayList<ClinicListItem>, private val bo
         val dateTV: TextView = view.findViewById(R.id.date)
         val recyclerView: RecyclerView = view.findViewById(R.id.search_item_prices_rv)
         val mapView: MapView = view.findViewById(R.id.search_lite_list_row_map)
+        val dividerTop: View = view.findViewById(R.id.dividerTop)
 
         lateinit var latLng: LatLng
         private lateinit var map: GoogleMap

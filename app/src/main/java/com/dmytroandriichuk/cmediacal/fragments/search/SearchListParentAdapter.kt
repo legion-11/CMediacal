@@ -62,6 +62,7 @@ class SearchListParentAdapter(dataSet: ArrayList<ClinicListItem>, private val it
         val item = dataSetFiltered[position]
         holder.nameTV.text = item.clinic.name
         holder.addressTV.text = item.clinic.address
+
         Picasso.get().load(item.imageURL).resize(80, 80).centerCrop().into(holder.image)
         holder.totalPrice.text = if (item.totalPrice != 0.0) textFormat.format(item.totalPrice) else ""
         holder.totalPriceHeader.text = if (item.totalPrice != 0.0) totalPriceHeaderText else ""
