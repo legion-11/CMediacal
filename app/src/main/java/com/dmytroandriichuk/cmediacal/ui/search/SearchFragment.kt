@@ -3,7 +3,6 @@ package com.dmytroandriichuk.cmediacal.ui.search
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.view.animation.AnimationUtils
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -24,7 +23,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 
 //first fragment of landing screen, provides search for clinics depending on search options
-class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, SearchListParentAdapter.BookmarksListener {
+class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, SearchListParentAdapter.ItemClickListener {
 
     private val searchViewModel: SearchViewModel by lazy {
         val activity = requireNotNull(this.activity) {
@@ -189,5 +188,9 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
             item.lng,
         )
         searchViewModel.delete(clinic)
+    }
+
+    override fun itemClicked(item: SearchListParentItem) {
+        (activity as LandingActivity).itemClicked(item)
     }
 }

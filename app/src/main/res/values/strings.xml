@@ -1,6 +1,15 @@
 <resources>
-    <string name="app_name">CMedical</string>
+    <array name="filters_resources">
+        <item>@array/filters7</item>
+        <item>@array/filters1</item>
+        <item>@array/filters2</item>
+        <item>@array/filters3</item>
+        <item>@array/filters4</item>
+        <item>@array/filters5</item>
+        <item>@array/filters6</item>
+    </array>
 
+    <string name="app_name">CMedical</string>
     <string name="full_name">Full Name</string>
     <string name="email">Email</string>
     <string name="save">Save</string>
@@ -23,7 +32,10 @@
     <string name="price_format">%s$</string>
     <string name="or">OR</string>
     <string name="total_price">Total price</string>
+
     <string name="clinic_info_button_image">clinic info button image</string>
+
+    <string name="title_activity_maps">Map</string>
 
     <string-array name="filter_titles">
         <item>Province and territorial codes</item>
@@ -34,16 +46,6 @@
         <item>Check up</item>
         <item>Other</item>
     </string-array>
-
-    <array name="filters_resources">
-        <item>@array/filters7</item>
-        <item>@array/filters1</item>
-        <item>@array/filters2</item>
-        <item>@array/filters3</item>
-        <item>@array/filters4</item>
-        <item>@array/filters5</item>
-        <item>@array/filters6</item>
-    </array>
 
     <string-array name="filters1">
         <item>Small</item>
@@ -72,6 +74,7 @@
         <item>Child</item>
     </string-array>
 
+
     <string-array name="filters6">
         <item>X-rays</item>
         <item>Sedation</item>
@@ -79,8 +82,6 @@
         <item>Veneer</item>
         <item>Implant</item>
     </string-array>
-
-
     <string-array name="filters7">
         <item>AB</item>
         <item>BC</item>
@@ -96,5 +97,11 @@
         <item>SK</item>
         <item>YT</item>
     </string-array>
-    <string name="title_activity_maps">Map</string>
+
+
+    <string name="cheese_ipsum">Jarlsberg lancashire edam. Dolcelatte hard cheese brie st. agur blue
+    cheese caerphilly bavarian bergkase cheese and biscuits mascarpone. Cheeseburger swiss bavarian
+    bergkase cream cheese fromage frais cheesy feet port-salut airedale. St. agur blue cheese rubber
+    cheese caerphilly cheddar cheesecake cream cheese manchego lancashire. Roquefort squirty cheese
+    the big cheese.</string>
 </resources>

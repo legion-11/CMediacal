@@ -90,7 +90,7 @@ class SearchViewModel(private val localDBRepository: DatabaseRepository) : ViewM
 
                 (doc["lat"] as Double?)?.let { lat = it }
                 (doc["lng"] as Double?)?.let { lng = it }
-                //TODO bookmark check
+
                 if (doc.id in bookmarksID){
                     bookmarked = true
                 }

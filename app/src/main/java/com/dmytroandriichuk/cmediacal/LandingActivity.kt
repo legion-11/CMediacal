@@ -17,6 +17,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.dmytroandriichuk.cmediacal.MainActivity.Companion
 import com.dmytroandriichuk.cmediacal.MainActivity.Companion.isOnline
 import com.dmytroandriichuk.cmediacal.ui.search.SearchViewModel
+import com.dmytroandriichuk.cmediacal.ui.search.model.SearchListParentItem
 import com.google.firebase.auth.FirebaseAuth
 import kotlin.system.exitProcess
 
@@ -55,5 +56,10 @@ class LandingActivity : AppCompatActivity() {
             ).show()
             startTime = System.currentTimeMillis()
         }
+    }
+
+    fun itemClicked(item: SearchListParentItem){
+        intent = Intent(this@LandingActivity, DetailsActivity::class.java)
+        startActivity(intent)
     }
 }

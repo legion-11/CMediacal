@@ -19,7 +19,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 //first adapter for the recycleView with nested items
-class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>, private val bookmarksListener: BookmarksListener):
+class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>, private val itemClickListener: ItemClickListener):
     RecyclerView.Adapter<SearchListParentAdapter.ViewHolder>(),
     Filterable {
     private var dataSetFiltered: ArrayList<SearchListParentItem>
@@ -70,14 +70,14 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>, private 
         holder.bookmarksButton.setOnClickListener {
             item.bookmarked = !item.bookmarked
             if (item.bookmarked){
-                bookmarksListener.addBookmark(dataSetFiltered[position])
+                itemClickListener.addBookmark(dataSetFiltered[position])
             } else {
-                bookmarksListener.removeBookmark(dataSetFiltered[position])
+                itemClickListener.removeBookmark(dataSetFiltered[position])
             }
         }
 
         holder.infoButton.setOnClickListener {
-            //TODO
+            itemClickListener.itemClicked(item)
         }
 
         holder.latLng = LatLng(item.lat, item.lng)
@@ -200,8 +200,9 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>, private 
         }
     }
 
-    interface BookmarksListener {
+    interface ItemClickListener {
         fun addBookmark(item: SearchListParentItem)
         fun removeBookmark(item: SearchListParentItem)
+        fun itemClicked(item: SearchListParentItem)
     }
 }
