@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/navigation_search"
-        android:name="com.dmytroandriichuk.cmediacal.ui.search.SearchFragment"
+        android:name="com.dmytroandriichuk.cmediacal.fragments.search.SearchFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_search" />
 
     <fragment
         android:id="@+id/navigation_leave_review"
-        android:name="com.dmytroandriichuk.cmediacal.ui.review.LeaveReviewFragment"
+        android:name="com.dmytroandriichuk.cmediacal.fragments.review.LeaveReviewFragment"
         android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_leave_review" />
 
     <fragment
         android:id="@+id/navigation_bookmarks"
-        android:name="com.dmytroandriichuk.cmediacal.ui.bookmarks.BookmarksFragment"
+        android:name="com.dmytroandriichuk.cmediacal.fragments.bookmarks.BookmarksFragment"
         android:label="@string/title_bookmarks"
         tools:layout="@layout/fragment_bookmarks" />
 </navigation>

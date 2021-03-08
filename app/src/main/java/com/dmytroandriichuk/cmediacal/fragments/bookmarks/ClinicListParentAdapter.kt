@@ -1,4 +1,4 @@
-package com.dmytroandriichuk.cmediacal.ui.search
+package com.dmytroandriichuk.cmediacal.fragments.bookmarks
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,37 +9,33 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.RecycledViewPool
 import com.dmytroandriichuk.cmediacal.R
-import com.dmytroandriichuk.cmediacal.ui.search.model.SearchListChildItem
-import com.dmytroandriichuk.cmediacal.ui.search.model.SearchListParentItem
+import com.dmytroandriichuk.cmediacal.fragments.common.ClinicListChildAdapter
+import com.dmytroandriichuk.cmediacal.data.ClinicListItem
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.squareup.picasso.Picasso
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
 //first adapter for the recycleView with nested items
-class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>, private val itemClickListener: ItemClickListener):
-    RecyclerView.Adapter<SearchListParentAdapter.ViewHolder>(),
-    Filterable {
-    private var dataSetFiltered: ArrayList<SearchListParentItem>
-    private var dataSetFull = ArrayList(dataSet.sortedWith(compareBy({ it.totalPrice }, { it.name })))
+class ClinicListParentAdapter(dataSet: ArrayList<ClinicListItem>, private val bookmarksListener: BookmarksListener):
+    RecyclerView.Adapter<ClinicListParentAdapter.ViewHolder>() {
+    private var dataSetFull = ArrayList(dataSet.sortedByDescending { it.clinic.date })
     private lateinit var textFormat: String
     private lateinit var totalPriceHeaderText: String
+    private val dateFormat: DateFormat =  SimpleDateFormat.getDateInstance(SimpleDateFormat.LONG)
     // An object of RecyclerView.RecycledViewPool
     // is created to share the Views
     // between the child and
     // the parent RecyclerViews
     private val viewPool = RecycledViewPool()
 
-    init {
-        //copy the list for future filtering
-        dataSetFiltered = ArrayList(dataSetFull)
-    }
 
-    fun changeDataSet(dataSet: ArrayList<SearchListParentItem>){
-        dataSetFull = ArrayList(dataSet.sortedWith(compareBy({ it.totalPrice }, { it.name })))
-        dataSetFiltered = ArrayList(dataSetFull)
+    fun changeDataSet(dataSet: ArrayList<ClinicListItem>){
+        dataSetFull = ArrayList(dataSet.sortedByDescending { it.clinic.date })
         notifyDataSetChanged()
         Log.d("TAG", "changeDataSet: $dataSetFull")
     }
@@ -54,15 +50,24 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>, private 
         // Here we inflate the corresponding
         // layout of the parent item
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.search_list_parent_item, parent, false)
+            .inflate(R.layout.clinic_list_parent_item, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = dataSetFiltered[position]
-        holder.nameTV.text = item.name
-        holder.addressTV.text = item.address
-        Picasso.get().load(item.imageURL).resize(80, 80).centerCrop().into(holder.image)
+        val item = dataSetFull[position]
+        val date = Date(item.clinic.date)
+        val datePreviousItem = if (position != 0) Date(dataSetFull[position-1].clinic.date) else Date(0)
+        if (dateFormat.format(datePreviousItem) == dateFormat.format(date)){
+            holder.dateTV.visibility = View.GONE
+        } else {
+            holder.dateTV.text = dateFormat.format(date)
+            holder.dateTV.visibility = View.VISIBLE
+        }
+        holder.nameTV.text = item.clinic.name
+        holder.addressTV.text = item.clinic.address
+        //TODO change to image
+        Picasso.get().load("https://therichmonddentalcentre.com/wp-content/uploads/2016/07/IMG_9025.jpg").resize(80, 80).centerCrop().into(holder.image)
         holder.totalPrice.text = if (item.totalPrice != 0.0) textFormat.format(item.totalPrice) else ""
         holder.totalPriceHeader.text = if (item.totalPrice != 0.0) totalPriceHeaderText else ""
 
@@ -70,28 +75,28 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>, private 
         holder.bookmarksButton.setOnClickListener {
             item.bookmarked = !item.bookmarked
             if (item.bookmarked){
-                itemClickListener.addBookmark(dataSetFiltered[position])
+                bookmarksListener.addBookmark(dataSetFull[position])
             } else {
-                itemClickListener.removeBookmark(dataSetFiltered[position])
+                bookmarksListener.removeBookmark(dataSetFull[position])
             }
         }
 
         holder.infoButton.setOnClickListener {
-            itemClickListener.itemClicked(item)
+            //TODO
         }
 
-        holder.latLng = LatLng(item.lat, item.lng)
+        holder.latLng = LatLng(item.clinic.lat, item.clinic.lng)
         holder.setMapLocation()
         // Create an instance of the child
         // item view adapter and set its
         // adapter, layout manager and RecyclerViewPool
-        val list = item.servicesPrices.map { SearchListChildItem(it.key, it.value) } as ArrayList
+        val list = item.servicePrices
         if (list.isNotEmpty()) {
             val layoutManager = LinearLayoutManager(holder.recyclerView.context)
             layoutManager.initialPrefetchItemCount = list.size
             holder.recyclerView.layoutManager = layoutManager
 
-            holder.recyclerView.adapter = SearchListChildAdapter(list)
+            holder.recyclerView.adapter = ClinicListChildAdapter(list)
             holder.recyclerView.setRecycledViewPool(viewPool)
             holder.recyclerView.visibility = if (item.expanded) View.VISIBLE else View.GONE
         } else {
@@ -107,42 +112,12 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>, private 
     }
 
     //number of items in recycleView
-    override fun getItemCount(): Int = dataSetFiltered.size
+    override fun getItemCount(): Int = dataSetFull.size
 
-    //filter items by clinic name
-    override fun getFilter(): Filter {
-        return  object : Filter() {
-            override fun performFiltering(constraint: CharSequence): FilterResults {
-                val filteredListParent: ArrayList<SearchListParentItem> = ArrayList()
-                dataSetFiltered = if (constraint.isEmpty()) {
-                    dataSetFull
-                } else {
-                    val filterPattern = constraint.toString().toLowerCase(Locale.ROOT).trim()
-                    for (item in dataSetFull) {
-                        if (item.name.toLowerCase(Locale.ROOT).contains(filterPattern)) {
-                            filteredListParent.add(item)
-                        }
-                    }
-                    filteredListParent
-                }
-                val results = FilterResults()
-                results.values = dataSetFiltered
-                return results
-            }
-
-            @Suppress("UNCHECKED_CAST")
-            override fun publishResults(constraint: CharSequence, results: FilterResults) {
-                dataSetFiltered = results.values as ArrayList<SearchListParentItem>
-                notifyDataSetChanged()
-            }
-        }
-
-    }
 
     override fun onViewRecycled(holder: ViewHolder) {
         holder.clearView()
         super.onViewRecycled(holder)
-        Log.d("SearchListParentAdapter", "onViewRecycled: ")
     }
 
     // This class is to initialize
@@ -157,6 +132,7 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>, private 
         val totalPrice: TextView = view.findViewById(R.id.search_item_total_price_tv)
         val bookmarksButton: ToggleButton = view.findViewById(R.id.search_item_bookmarks_tglBtn)
         val infoButton: ImageButton = view.findViewById(R.id.search_item_info_btn)
+        val dateTV: TextView = view.findViewById(R.id.date)
         val recyclerView: RecyclerView = view.findViewById(R.id.search_item_prices_rv)
         val mapView: MapView = view.findViewById(R.id.search_lite_list_row_map)
 
@@ -200,9 +176,8 @@ class SearchListParentAdapter(dataSet: ArrayList<SearchListParentItem>, private 
         }
     }
 
-    interface ItemClickListener {
-        fun addBookmark(item: SearchListParentItem)
-        fun removeBookmark(item: SearchListParentItem)
-        fun itemClicked(item: SearchListParentItem)
+    interface BookmarksListener {
+        fun addBookmark(item: ClinicListItem)
+        fun removeBookmark(item: ClinicListItem)
     }
 }

@@ -2,22 +2,14 @@ package com.dmytroandriichuk.cmediacal
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import android.widget.Toast
-import androidx.appcompat.widget.Toolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.dmytroandriichuk.cmediacal.MainActivity.Companion
 import com.dmytroandriichuk.cmediacal.MainActivity.Companion.isOnline
-import com.dmytroandriichuk.cmediacal.ui.search.SearchViewModel
-import com.dmytroandriichuk.cmediacal.ui.search.model.SearchListParentItem
+import com.dmytroandriichuk.cmediacal.data.ClinicListItem
+import com.dmytroandriichuk.cmediacal.data.DataHolder
 import com.google.firebase.auth.FirebaseAuth
 import kotlin.system.exitProcess
 
@@ -58,7 +50,8 @@ class LandingActivity : AppCompatActivity() {
         }
     }
 
-    fun itemClicked(item: SearchListParentItem){
+    fun itemClicked(item: ClinicListItem){
+        DataHolder.data = item.clinic
         intent = Intent(this@LandingActivity, DetailsActivity::class.java)
         startActivity(intent)
     }

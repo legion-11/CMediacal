@@ -1,4 +1,4 @@
-package com.dmytroandriichuk.cmediacal.ui.review
+package com.dmytroandriichuk.cmediacal.fragments.review
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

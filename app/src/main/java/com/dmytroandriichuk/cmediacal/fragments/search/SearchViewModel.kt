@@ -1,10 +1,10 @@
-package com.dmytroandriichuk.cmediacal.ui.search
+package com.dmytroandriichuk.cmediacal.fragments.search
 
 import androidx.lifecycle.*
+import com.dmytroandriichuk.cmediacal.data.ClinicListItem
 import com.dmytroandriichuk.cmediacal.db.DatabaseRepository
 import com.dmytroandriichuk.cmediacal.db.entity.Clinic
 import com.dmytroandriichuk.cmediacal.db.entity.ServicePrice
-import com.dmytroandriichuk.cmediacal.ui.search.model.SearchListParentItem
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -16,14 +16,14 @@ class SearchViewModel(private val localDBRepository: DatabaseRepository) : ViewM
     private val firebaseFirestoreDB = FirebaseFirestore.getInstance()
     private val mAuth = FirebaseAuth.getInstance()
 
-    private val _searchItems = MutableLiveData<ArrayList<SearchListParentItem>>()
-    val searchItems: LiveData<ArrayList<SearchListParentItem>> = _searchItems
+    private val _searchItems = MutableLiveData<ArrayList<ClinicListItem>>()
+    val searchItems: LiveData<ArrayList<ClinicListItem>> = _searchItems
     private val _bookmarks: LiveData<Array<Clinic>> = localDBRepository.getAllClinics(getUser()).asLiveData()
     private val _observer = Observer {
         array: Array<Clinic> -> bookmarks = array
         val map = array.map { it.id }
         _searchItems.value?.forEach { item ->
-            item.bookmarked = item.id in map
+            item.bookmarked = item.clinic.id in map
         }
     }
     private lateinit var bookmarks: Array<Clinic>
@@ -41,9 +41,8 @@ class SearchViewModel(private val localDBRepository: DatabaseRepository) : ViewM
         super.onCleared()
     }
 
-    fun getUser(): String {
-        return mAuth.currentUser?.email ?: "default"
-    }
+    private fun getUser() = mAuth.currentUser?.email ?: "default"
+
 
     fun insert(clinic: Clinic) {
         localDBRepository.insert(clinic)
@@ -80,21 +79,18 @@ class SearchViewModel(private val localDBRepository: DatabaseRepository) : ViewM
     private fun setSearchItems(query: QuerySnapshot, filters: ArrayList<String>){
         val bookmarksID = bookmarks.map { it.id }
         _searchItems.value = query.map { doc ->
-            SearchListParentItem(doc.id).apply {
-                (doc["name"] as String?)?.let { name = it }
-                (doc["address"] as String?)?.let { address = it }
-                (doc["imageURL"] as String?)?.let { imageURL = it }
-                updateServicesPrices(filters.associateWith {
-                    doc[it] as Double
-                })
 
-                (doc["lat"] as Double?)?.let { lat = it }
-                (doc["lng"] as Double?)?.let { lng = it }
-
-                if (doc.id in bookmarksID){
-                    bookmarked = true
-                }
+            val clinic = Clinic( doc.id,
+                    getUser(),
+                    doc["name"] as String? ?: "placeholder",
+                    doc["address"] as String? ?: "placeholder",
+                    doc["lat"] as Double? ?: 0.0,
+                    doc["lng"] as Double? ?: 0.0,
+                    )
+            val services = filters.map {
+                ServicePrice(0, it, doc[it] as Double, clinic.crossRefId)
             }
+            ClinicListItem(clinic, services, bookmarked = clinic.id in  bookmarksID)
         } as ArrayList
     }
 

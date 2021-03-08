@@ -1,4 +1,4 @@
-package com.dmytroandriichuk.cmediacal.ui.bookmarks
+package com.dmytroandriichuk.cmediacal.fragments.bookmarks
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dmytroandriichuk.cmediacal.CMedicalApplication
 import com.dmytroandriichuk.cmediacal.R
-import com.dmytroandriichuk.cmediacal.ui.bookmarks.model.ClinicListItem
+import com.dmytroandriichuk.cmediacal.data.ClinicListItem
 import com.google.android.material.snackbar.Snackbar
 
 class BookmarksFragment : Fragment(), ClinicListParentAdapter.BookmarksListener {

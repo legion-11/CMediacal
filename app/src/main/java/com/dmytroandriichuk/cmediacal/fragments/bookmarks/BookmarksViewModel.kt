@@ -1,12 +1,9 @@
-package com.dmytroandriichuk.cmediacal.ui.bookmarks
+package com.dmytroandriichuk.cmediacal.fragments.bookmarks
 
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
-import com.dmytroandriichuk.cmediacal.CMedicalApplication
 import com.dmytroandriichuk.cmediacal.db.DatabaseRepository
 import com.dmytroandriichuk.cmediacal.db.entity.Clinic
 import com.dmytroandriichuk.cmediacal.db.entity.ClinicAndServicePrices
-import com.dmytroandriichuk.cmediacal.ui.search.SearchViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 class BookmarksViewModel(private val localDBRepository: DatabaseRepository) : ViewModel() {

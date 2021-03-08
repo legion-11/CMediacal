@@ -1,4 +1,4 @@
-package com.dmytroandriichuk.cmediacal.ui.search.dialog.model
+package com.dmytroandriichuk.cmediacal.fragments.search.dialog.model
 
 data class DialogFilterListItem(
     //filter category

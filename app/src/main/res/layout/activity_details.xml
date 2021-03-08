@@ -3,7 +3,6 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:map="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -22,14 +21,16 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
+            android:background="?attr/colorPrimary"
             app:expandedTitleMarginEnd="100dp"
+            app:expandedTitleMarginBottom="16dp"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <com.google.android.gms.maps.MapView
                 android:id="@+id/details_lite_list_row_map"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="80dp"
                 map:liteMode="true" />
 
             <androidx.appcompat.widget.Toolbar
@@ -62,18 +63,81 @@
                 <LinearLayout
                     style="@style/Widget.CardContent"
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="2dp"
+                        android:text="@string/address"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                        app:drawableStartCompat="@drawable/ic_address" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/placeholder"
+                        android:textAlignment="textEnd"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/card_margin">
+
+                <LinearLayout
+                    style="@style/Widget.CardContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="2dp"
+                        android:text="@string/phone"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                        app:drawableStartCompat="@drawable/ic_address" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/placeholder"
+                        android:textAlignment="textEnd"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/card_margin">
+
+
+                <LinearLayout
+                    style="@style/Widget.CardContent"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Info"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+                        android:drawablePadding="2dp"
+                        android:text="@string/prices"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                        app:drawableStartCompat="@drawable/ic_prices" />
 
-                    <TextView
+                    <androidx.recyclerview.widget.RecyclerView
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/cheese_ipsum" />
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="8dp" />
 
                 </LinearLayout>
 
@@ -86,7 +150,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:contentDescription="Add to bookmarks"
+        android:contentDescription="@string/add_to_bookmarks"
         android:layout_gravity="end|bottom"
         app:srcCompat="@drawable/ic_bookmark_off" />
 

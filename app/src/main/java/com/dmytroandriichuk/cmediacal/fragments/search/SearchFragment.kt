@@ -1,4 +1,4 @@
-package com.dmytroandriichuk.cmediacal.ui.search
+package com.dmytroandriichuk.cmediacal.fragments.search
 
 import android.os.Bundle
 import android.util.Log
@@ -14,10 +14,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dmytroandriichuk.cmediacal.CMedicalApplication
 import com.dmytroandriichuk.cmediacal.LandingActivity
 import com.dmytroandriichuk.cmediacal.R
-import com.dmytroandriichuk.cmediacal.db.entity.Clinic
+import com.dmytroandriichuk.cmediacal.data.ClinicListItem
 import com.dmytroandriichuk.cmediacal.db.entity.ServicePrice
-import com.dmytroandriichuk.cmediacal.ui.search.dialog.FilterListDialog
-import com.dmytroandriichuk.cmediacal.ui.search.model.SearchListParentItem
+import com.dmytroandriichuk.cmediacal.fragments.search.dialog.FilterListDialog
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
@@ -161,36 +160,21 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
         Log.d(TAG, "removeProvince: ${searchViewModel.provinces}")
     }
 
-    override fun addBookmark(item: SearchListParentItem) {
+    override fun addBookmark(item: ClinicListItem) {
         Log.d(TAG, "addBookmark: $item")
-        val clinic = Clinic(
-            item.id,
-            searchViewModel.getUser(),
-            item.name,
-            item.address,
-            item.lat,
-            item.lng,
-        )
-        searchViewModel.insert(clinic)
-        for (servicePrice in item.servicesPrices) {
-            searchViewModel.insert(ServicePrice(0, servicePrice.key, servicePrice.value, clinic.crossRefId))
+
+        searchViewModel.insert(item.clinic)
+        for (servicePrice in item.servicePrices) {
+            searchViewModel.insert(ServicePrice(0, servicePrice.serviceName, servicePrice.price, item.clinic.crossRefId))
         }
     }
 
-    override fun removeBookmark(item: SearchListParentItem) {
+    override fun removeBookmark(item: ClinicListItem) {
         Log.d(TAG, "removeBookmark: $item")
-        val clinic = Clinic(
-            item.id,
-            searchViewModel.getUser(),
-            item.name,
-            item.address,
-            item.lat,
-            item.lng,
-        )
-        searchViewModel.delete(clinic)
+        searchViewModel.delete(item.clinic)
     }
 
-    override fun itemClicked(item: SearchListParentItem) {
+    override fun itemClicked(item: ClinicListItem) {
         (activity as LandingActivity).itemClicked(item)
     }
 }

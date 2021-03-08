@@ -1,4 +1,4 @@
-package com.dmytroandriichuk.cmediacal.ui.search
+package com.dmytroandriichuk.cmediacal.fragments.common
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,10 +6,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.dmytroandriichuk.cmediacal.R
-import com.dmytroandriichuk.cmediacal.ui.search.model.SearchListChildItem
+import com.dmytroandriichuk.cmediacal.db.entity.ServicePrice
 
 //adapter for nester recycleView
-class SearchListChildAdapter(private val dataSet: ArrayList<SearchListChildItem>): RecyclerView.Adapter<SearchListChildAdapter.ViewHolder>() {
+class ClinicListChildAdapter(private val dataSet: List<ServicePrice>): RecyclerView.Adapter<ClinicListChildAdapter.ViewHolder>() {
 
     private lateinit var textFormat: String
     // This class is to initialize
@@ -29,7 +29,7 @@ class SearchListChildAdapter(private val dataSet: ArrayList<SearchListChildItem>
     // layout of the child item
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.search_list_child_item, parent, false)
+                .inflate(R.layout.clinic_list_child_item, parent, false)
         return ViewHolder(view)
     }
 
@@ -37,7 +37,7 @@ class SearchListChildAdapter(private val dataSet: ArrayList<SearchListChildItem>
     // class for the given position
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataSet[position]
-        holder.nameTV.text = item.name
+        holder.nameTV.text = item.serviceName
         holder.priceTV.text = textFormat.format(item.price)
     }
 

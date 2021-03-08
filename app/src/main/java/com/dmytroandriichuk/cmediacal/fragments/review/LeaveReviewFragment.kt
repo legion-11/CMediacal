@@ -1,4 +1,4 @@
-package com.dmytroandriichuk.cmediacal.ui.review
+package com.dmytroandriichuk.cmediacal.fragments.review
 
 import android.os.Bundle
 import android.view.*
