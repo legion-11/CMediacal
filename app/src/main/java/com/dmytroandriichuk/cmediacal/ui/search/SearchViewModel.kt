@@ -19,7 +19,13 @@ class SearchViewModel(private val localDBRepository: DatabaseRepository) : ViewM
     private val _searchItems = MutableLiveData<ArrayList<SearchListParentItem>>()
     val searchItems: LiveData<ArrayList<SearchListParentItem>> = _searchItems
     private val _bookmarks: LiveData<Array<Clinic>> = localDBRepository.getAllClinics(getUser()).asLiveData()
-    private val _observer = Observer { array: Array<Clinic> -> bookmarks = array }
+    private val _observer = Observer {
+        array: Array<Clinic> -> bookmarks = array
+        val map = array.map { it.id }
+        _searchItems.value?.forEach { item ->
+            item.bookmarked = item.id in map
+        }
+    }
     private lateinit var bookmarks: Array<Clinic>
 
     val provinces: ArrayList<String> = ArrayList()

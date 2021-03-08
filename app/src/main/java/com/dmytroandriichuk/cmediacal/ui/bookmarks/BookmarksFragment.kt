@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dmytroandriichuk.cmediacal.CMedicalApplication
 import com.dmytroandriichuk.cmediacal.R
 import com.dmytroandriichuk.cmediacal.ui.bookmarks.model.ClinicListItem
+import com.google.android.material.snackbar.Snackbar
 
 class BookmarksFragment : Fragment(), ClinicListParentAdapter.BookmarksListener {
 
@@ -40,5 +41,11 @@ class BookmarksFragment : Fragment(), ClinicListParentAdapter.BookmarksListener 
 
     override fun removeBookmark(item: ClinicListItem) {
         bookmarksViewModel.delete(item.clinic)
+        this.view?.let {
+            Snackbar.make(it, "Bookmark is deleted", Snackbar.LENGTH_LONG)
+                .setAction("UNDO") {
+                    addBookmark(item)
+                }.show()
+        }
     }
 }

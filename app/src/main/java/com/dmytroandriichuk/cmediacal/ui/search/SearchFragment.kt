@@ -70,6 +70,7 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
             }
         })
 
+
         // get all from firebase db
         if (searchViewModel.firstCall){
             startQuery()
