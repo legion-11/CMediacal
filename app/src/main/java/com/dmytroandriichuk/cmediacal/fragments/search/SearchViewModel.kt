@@ -1,5 +1,6 @@
 package com.dmytroandriichuk.cmediacal.fragments.search
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.dmytroandriichuk.cmediacal.data.ClinicListItem
 import com.dmytroandriichuk.cmediacal.db.DatabaseRepository
@@ -42,7 +43,6 @@ class SearchViewModel(private val localDBRepository: DatabaseRepository) : ViewM
     }
 
     private fun getUser() = mAuth.currentUser?.email ?: "default"
-
 
     fun insert(clinic: Clinic) {
         localDBRepository.insert(clinic)

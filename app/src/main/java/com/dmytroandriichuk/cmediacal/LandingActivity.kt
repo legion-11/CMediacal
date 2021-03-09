@@ -51,7 +51,7 @@ class LandingActivity : AppCompatActivity() {
     }
 
     fun itemClicked(item: ClinicListItem){
-        DataHolder.data = item.clinic
+        DataHolder.data = item
         intent = Intent(this@LandingActivity, DetailsActivity::class.java)
         startActivity(intent)
     }

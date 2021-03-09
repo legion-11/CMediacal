@@ -51,7 +51,7 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
         recyclerView.layoutManager = LinearLayoutManager(activity)
 
         recyclerView.adapter = SearchListParentAdapter(ArrayList(), this)
-        searchViewModel.searchItems.observe(viewLifecycleOwner, {
+        searchViewModel.searchItems.observe(activity as LandingActivity, {
             (recyclerView.adapter as SearchListParentAdapter).changeDataSet(it)
         })
 

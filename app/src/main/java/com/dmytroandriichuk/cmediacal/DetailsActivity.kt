@@ -6,20 +6,18 @@ import android.content.Context
 import android.content.res.TypedArray
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dmytroandriichuk.cmediacal.data.DataHolder
-import com.dmytroandriichuk.cmediacal.db.entity.ServicePrice
-import com.dmytroandriichuk.cmediacal.fragments.search.SearchListParentAdapter
 import com.dmytroandriichuk.cmediacal.fragments.search.dialog.model.DialogFilterListItem
 import com.dmytroandriichuk.cmediacal.viewModel.DetailsViewModel
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class DetailsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -30,10 +28,11 @@ class DetailsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
-        val clinicData = DataHolder.data
+        val clinicData = DataHolder.data!!
+        val clinic = clinicData.clinic
         val toolbar: Toolbar = findViewById(R.id.toolbar)
-        title = clinicData?.name
-        latLng = LatLng(clinicData!!.lat, clinicData.lng)
+        title = clinic.name
+        latLng = LatLng(clinic.lat, clinic.lng)
 
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -42,7 +41,7 @@ class DetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         //TODO change placeholder
         findViewById<TextView>(R.id.details_clinic_phone).text = "123123123"
         val address = findViewById<TextView>(R.id.details_clinic_address)
-        address.text = clinicData.address
+        address.text = clinic.address
         address.setOnClickListener {
             val clip = ClipData.newPlainText("address", address.text)
             clipboard.setPrimaryClip(clip)
@@ -63,7 +62,7 @@ class DetailsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }.toTypedArray().flatten()
         detailsViewModel = ViewModelProvider(this,
-                DetailsViewModel.DetailsViewModelFactory(flattenFilers))
+                DetailsViewModel.DetailsViewModelFactory(flattenFilers, (application as CMedicalApplication).repository))
                 .get(DetailsViewModel::class.java)
 
         val mapView: MapView = findViewById(R.id.details_lite_list_row_map)
@@ -78,7 +77,21 @@ class DetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         detailsViewModel.searchDoc.observe(this, {
             recyclerView.adapter = DetailsListAdapter(it.servicePrices)
         })
-        detailsViewModel.getClinicData(clinicData.id)
+        detailsViewModel.getClinicData(clinic.id)
+
+        val ftn = findViewById<FloatingActionButton>(R.id.details_floating_btn)
+        if (clinicData.bookmarked){ ftn.setImageResource(R.drawable.ic_bookmark_on) }
+        ftn.setOnClickListener {
+            if (clinicData.bookmarked){
+                detailsViewModel.delete(clinic)
+                clinicData.bookmarked = false
+                ftn.setImageResource(R.drawable.ic_bookmark_off)
+            } else {
+                detailsViewModel.insert(clinic)
+                clinicData.bookmarked = true
+                ftn.setImageResource(R.drawable.ic_bookmark_on)
+            }
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {

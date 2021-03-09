@@ -21,7 +21,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 //first adapter for the recycleView with nested items
-class ClinicListParentAdapter(dataSet: ArrayList<ClinicListItem>, private val bookmarksListener: BookmarksListener):
+class ClinicListParentAdapter(dataSet: ArrayList<ClinicListItem>, private val itemClickListener: ItemClickListener):
     RecyclerView.Adapter<ClinicListParentAdapter.ViewHolder>() {
     private var dataSetFull = ArrayList(dataSet.sortedByDescending { it.clinic.date })
     private lateinit var textFormat: String
@@ -77,14 +77,14 @@ class ClinicListParentAdapter(dataSet: ArrayList<ClinicListItem>, private val bo
         holder.bookmarksButton.setOnClickListener {
             item.bookmarked = !item.bookmarked
             if (item.bookmarked){
-                bookmarksListener.addBookmark(dataSetFull[position])
+                itemClickListener.addBookmark(dataSetFull[position])
             } else {
-                bookmarksListener.removeBookmark(dataSetFull[position])
+                itemClickListener.removeBookmark(dataSetFull[position])
             }
         }
 
         holder.infoButton.setOnClickListener {
-            //TODO
+            itemClickListener.itemClicked(item)
         }
 
         holder.latLng = LatLng(item.clinic.lat, item.clinic.lng)
@@ -179,8 +179,9 @@ class ClinicListParentAdapter(dataSet: ArrayList<ClinicListItem>, private val bo
         }
     }
 
-    interface BookmarksListener {
+    interface ItemClickListener {
         fun addBookmark(item: ClinicListItem)
         fun removeBookmark(item: ClinicListItem)
+        fun itemClicked(item: ClinicListItem)
     }
 }

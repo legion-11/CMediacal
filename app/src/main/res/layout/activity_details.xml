@@ -102,7 +102,7 @@
                         android:drawablePadding="2dp"
                         android:text="@string/phone"
                         android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                        app:drawableStartCompat="@drawable/ic_address" />
+                        app:drawableStartCompat="@drawable/ic_phone" />
 
                     <TextView
                         android:id="@+id/details_clinic_phone"

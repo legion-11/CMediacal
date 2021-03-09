@@ -7,14 +7,24 @@ import androidx.lifecycle.ViewModelProvider
 import com.dmytroandriichuk.cmediacal.db.entity.Clinic
 import com.dmytroandriichuk.cmediacal.db.entity.ServicePrice
 import com.dmytroandriichuk.cmediacal.data.ClinicListItem
+import com.dmytroandriichuk.cmediacal.db.DatabaseRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-class DetailsViewModel(private val filters: List<String>) : ViewModel() {
+class DetailsViewModel(private val filters: List<String>, private val localDBRepository: DatabaseRepository) : ViewModel() {
     private val firebaseFirestoreDB = FirebaseFirestore.getInstance()
     private val mAuth = FirebaseAuth.getInstance()
     private val _searchDoc = MutableLiveData<ClinicListItem>()
     val searchDoc: LiveData<ClinicListItem> = _searchDoc
+
+
+    fun insert(clinic: Clinic) {
+        localDBRepository.insert(clinic)
+    }
+
+    fun delete(clinic: Clinic) {
+        localDBRepository.delete(clinic)
+    }
 
     fun getClinicData(id: String){
         firebaseFirestoreDB.collection("Dental Clinics").document(id).get()
@@ -36,11 +46,11 @@ class DetailsViewModel(private val filters: List<String>) : ViewModel() {
                     _searchDoc.value = ClinicListItem(clinic, services)
                 }
     }
-    class DetailsViewModelFactory(private val filters: List<String>) : ViewModelProvider.Factory {
+    class DetailsViewModelFactory(private val filters: List<String>, private val localDBRepository: DatabaseRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(DetailsViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")
-                return DetailsViewModel(filters) as T
+                return DetailsViewModel(filters, localDBRepository) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }

@@ -9,11 +9,12 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dmytroandriichuk.cmediacal.CMedicalApplication
+import com.dmytroandriichuk.cmediacal.LandingActivity
 import com.dmytroandriichuk.cmediacal.R
 import com.dmytroandriichuk.cmediacal.data.ClinicListItem
 import com.google.android.material.snackbar.Snackbar
 
-class BookmarksFragment : Fragment(), ClinicListParentAdapter.BookmarksListener {
+class BookmarksFragment : Fragment(), ClinicListParentAdapter.ItemClickListener {
 
     private val bookmarksViewModel: BookmarksViewModel by viewModels {
         BookmarksViewModel.BookmarksViewModelFactory((activity?.application as CMedicalApplication).repository)
@@ -47,5 +48,9 @@ class BookmarksFragment : Fragment(), ClinicListParentAdapter.BookmarksListener 
                     addBookmark(item)
                 }.show()
         }
+    }
+
+    override fun itemClicked(item: ClinicListItem) {
+        (activity as LandingActivity).itemClicked(item)
     }
 }
