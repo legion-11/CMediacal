@@ -24,14 +24,18 @@ import com.google.firebase.auth.FirebaseAuth
 //first fragment of landing screen, provides search for clinics depending on search options
 class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, SearchListParentAdapter.ItemClickListener {
 
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var searchView: SearchView
     private val searchViewModel: SearchViewModel by lazy {
         val activity = requireNotNull(this.activity) {
             "You can only access the viewModel after onActivityCreated()"
         }
-        ViewModelProvider(activity as LandingActivity,
+        ViewModelProvider(this,
                 SearchViewModel.SearchViewModelFactory((activity.application as CMedicalApplication).repository))
                 .get(SearchViewModel::class.java)
     }
+
+    val adapter = SearchListParentAdapter(ArrayList(), this)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,16 +51,25 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
         //replace toolbar back button icon with our icon
         mToolbar.setNavigationIcon(R.drawable.ic_log_out)
 
-        val recyclerView = root.findViewById<RecyclerView>(R.id.searchListRecyclerView)
+        recyclerView = root.findViewById<RecyclerView>(R.id.searchListRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(activity)
+        recyclerView.adapter = adapter
 
-        recyclerView.adapter = SearchListParentAdapter(ArrayList(), this)
-        searchViewModel.searchItems.observe(activity as LandingActivity, {
-            (recyclerView.adapter as SearchListParentAdapter).changeDataSet(it)
-        })
+        //provide search for recycleView
+        searchView = root.findViewById(R.id.searchView)
 
-        //provide search through recycleView
-        val searchView: SearchView = root.findViewById(R.id.searchView)
+        // get all from firebase db
+        if (searchViewModel.firstCall){
+            startQuery()
+            searchViewModel.firstCall = false
+        }
+
+        return root
+    }
+
+    override fun onResume() {
+        super.onResume()
+
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 return false
@@ -68,14 +81,10 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
             }
         })
 
-
-        // get all from firebase db
-        if (searchViewModel.firstCall){
-            startQuery()
-            searchViewModel.firstCall = false
-        }
-
-        return root
+        searchViewModel.searchItems.observe(viewLifecycleOwner, {
+            (recyclerView.adapter as SearchListParentAdapter).changeDataSet(it)
+            Log.d(TAG, "onCreateView: apply data")
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
