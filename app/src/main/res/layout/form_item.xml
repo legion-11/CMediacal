@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="4dp">
+
+    <Spinner
+        android:id="@+id/formCategorySpinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/formPriceET"
+        app:layout_constraintEnd_toStartOf="@+id/formSubcategorySpinner"
+        app:layout_constraintHorizontal_weight="6"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/formSubcategorySpinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/formPriceET"
+        app:layout_constraintEnd_toStartOf="@+id/formPriceET"
+        app:layout_constraintHorizontal_weight="4"
+        app:layout_constraintStart_toEndOf="@+id/formCategorySpinner"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/formCancelButton"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:background="@null"
+        app:layout_constraintBottom_toBottomOf="@+id/formPriceET"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_close" />
+
+    <EditText
+        android:id="@+id/formPriceET"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="numberDecimal"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@+id/formCancelButton"
+        app:layout_constraintStart_toEndOf="@+id/formSubcategorySpinner"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_min="70dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

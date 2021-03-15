@@ -1,19 +1,11 @@
 package com.dmytroandriichuk.cmediacal.fragments.review
 
-import android.net.Uri
 import android.util.Log
-import android.widget.Toast
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.UploadTask
 import com.google.firebase.storage.ktx.storage
-import com.google.type.DateTime
-import java.time.Instant.now
-import java.util.*
-import kotlin.collections.ArrayList
 
 class LeaveReviewViewModel : ViewModel() {
 
@@ -21,16 +13,21 @@ class LeaveReviewViewModel : ViewModel() {
     private val firebaseFirestoreDB = FirebaseFirestore.getInstance().collection("Images")
 
     val loadingItems: MutableList<ImagesAdapter.LoadingItem> = ArrayList()
+    val formItems: MutableList<FormAdapter.FormItem> = ArrayList()
+
     val progresses: MutableLiveData<Array<Int>> = MutableLiveData()
     var isUploading = false
 
     fun putFiles() {
-        isUploading = true
+        if (loadingItems.size == 0) return
         progresses.value = Array(loadingItems.size) { 0 }
+
         // push new doc to firestore to get unique id
         firebaseFirestoreDB.add(hashMapOf("somedata" to "somedata"))
             .addOnSuccessListener { docRef ->
                 val ref = imageRef.child(docRef.id)
+                isUploading = true
+                var numberOfUploadingFiles = loadingItems.size
                 for (i in 0 until loadingItems.size) {
                     // each image will have path images/<docRef.id>/<i>
                     val fileRef = ref.child(i.toString())
@@ -38,16 +35,20 @@ class LeaveReviewViewModel : ViewModel() {
                         .addOnProgressListener {
                             progresses.value!![i] = (it.bytesTransferred.toFloat() / it.totalByteCount.toFloat() * 100).toInt()
                             progresses.value = progresses.value
-//                            if (progresses.value?.all { it == 100 } == true) {
-//                                isUploading = false
-//                            }
+                        }
+                        .addOnCompleteListener {
+                            if (it.isComplete) {
+                                numberOfUploadingFiles -= 1
+                                if (numberOfUploadingFiles == 0) {
+                                    isUploading = false
+                                }
+                            }
                         }
                 }
 
             }
             .addOnFailureListener {
                 Log.d("TAG", "putFiles: error")
-//                isUploading = false
             }
     }
 }

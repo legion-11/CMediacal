@@ -33,6 +33,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:background="@null"
+        android:tint="#FB0000"
         app:layout_constraintBottom_toBottomOf="@+id/loadingImageView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/loadingImageView"

@@ -9,55 +9,72 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.dmytroandriichuk.cmediacal.R
-import com.dmytroandriichuk.cmediacal.data.ClinicListItem
-import com.google.android.gms.maps.*
-import java.util.*
-import kotlin.collections.ArrayList
 
 //first adapter for the recycleView with nested items
 class ImagesAdapter(private var dataSet: MutableList<LoadingItem>, private val deleteItemListener: DeleteItemListener):
-    RecyclerView.Adapter<ImagesAdapter.ViewHolder>() {
-    val TAG = "ImagesAdapter"
+    RecyclerView.Adapter<ImagesAdapter.BaseViewHolder>() {
 
-    fun addItem(item: LoadingItem){
+    fun addItem() {
         notifyItemInserted(dataSet.size-1)
-        Log.d(TAG, "addItem: $dataSet")
     }
 
     fun removeItem(position: Int){
         notifyItemRemoved(position)
-        notifyItemRangeChanged(position, dataSet.size);
-        Log.d(TAG, "removeItem: $dataSet")
+        notifyItemRangeChanged(position, dataSet.size)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.load_image_item, parent, false)
-        return ViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = dataSet[position]
-        holder.deleteBtn.setOnClickListener {
-            deleteItemListener.removeItem(position)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
+        return if (viewType == 0 ) {
+            val view = LayoutInflater.from(parent.context).inflate( R.layout.load_image_item, parent, false)
+            ViewHolderWithImage(view)
+        } else {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.add_image, parent, false)
+            ViewHolderAdd(view)
         }
-        holder.image.setImageBitmap(item.bitmap)
-        holder.progress.progress = item.progress
+
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        if (position == dataSet.size) {
+            return 1
+        }
+        return 0
+    }
+
+    override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
+        if (holder.itemViewType == 0) {
+            holder as ViewHolderWithImage
+            val item = dataSet[position]
+            holder.deleteBtn.setOnClickListener {
+                deleteItemListener.removeItem(position)
+            }
+            holder.image.setImageBitmap(item.bitmap)
+            holder.progress.progress = item.progress
+        } else {
+            (holder as ViewHolderAdd).addBtn.setOnClickListener {
+                deleteItemListener.addItem()
+            }
+        }
     }
 
     //number of items in recycleView
-    override fun getItemCount(): Int = dataSet.size
+    override fun getItemCount(): Int = dataSet.size + 1
 
-    // This class is to initialize
-    // the Views present in
-    // the parent RecyclerView
-    class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    abstract class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+
+    class ViewHolderWithImage(val view: View) : BaseViewHolder(view) {
         val image: ImageView = view.findViewById(R.id.loadingImageView)
         val progress: ProgressBar = view.findViewById(R.id.loadingProgressBar)
         val deleteBtn: ImageButton = view.findViewById(R.id.loadingDeleteBtn)
     }
 
+    class ViewHolderAdd(val view: View) : BaseViewHolder(view) {
+        val addBtn: ImageButton = view.findViewById(R.id.addBtn)
+    }
+
     interface DeleteItemListener {
         fun removeItem(position: Int)
+        fun addItem()
     }
 
     class LoadingItem(val bitmap: Bitmap, val uri: Uri, var progress: Int = 0)
