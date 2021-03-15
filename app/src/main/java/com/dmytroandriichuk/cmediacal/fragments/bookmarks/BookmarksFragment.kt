@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dmytroandriichuk.cmediacal.CMedicalApplication
@@ -16,7 +16,7 @@ import com.google.android.material.snackbar.Snackbar
 
 class BookmarksFragment : Fragment(), ClinicListParentAdapter.ItemClickListener {
 
-    private val bookmarksViewModel: BookmarksViewModel by viewModels {
+    private val bookmarksViewModel: BookmarksViewModel by activityViewModels {
         BookmarksViewModel.BookmarksViewModelFactory((activity?.application as CMedicalApplication).repository)
     }
 

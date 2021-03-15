@@ -22,8 +22,8 @@ import kotlin.collections.ArrayList
 class SearchListParentAdapter(dataSet: ArrayList<ClinicListItem>, private val itemClickListener: ItemClickListener):
     RecyclerView.Adapter<SearchListParentAdapter.ViewHolder>(),
     Filterable {
-    private var dataSetFiltered: ArrayList<ClinicListItem>
     private var dataSetFull = ArrayList(dataSet.sortedWith(compareBy({ it.totalPrice }, { it.clinic.name })))
+    private var dataSetFiltered = ArrayList(dataSetFull)
     private lateinit var textFormat: String
     private lateinit var totalPriceHeaderText: String
     // An object of RecyclerView.RecycledViewPool
@@ -31,11 +31,6 @@ class SearchListParentAdapter(dataSet: ArrayList<ClinicListItem>, private val it
     // between the child and
     // the parent RecyclerViews
     private val viewPool = RecycledViewPool()
-
-    init {
-        //copy the list for future filtering
-        dataSetFiltered = ArrayList(dataSetFull)
-    }
 
     fun changeDataSet(dataSet: ArrayList<ClinicListItem>){
         dataSetFull = ArrayList(dataSet.sortedWith(compareBy({ it.totalPrice }, { it.clinic.name })))

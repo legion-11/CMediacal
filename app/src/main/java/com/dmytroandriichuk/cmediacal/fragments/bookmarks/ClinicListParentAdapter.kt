@@ -163,6 +163,7 @@ class ClinicListParentAdapter(dataSet: ArrayList<ClinicListItem>, private val it
 
         /** This function is called when we need to clear the map. */
         fun clearView() {
+            if (!::map.isInitialized) return
             with(map) {
                 // Clear the map and free up resources by changing the map type to none
                 clear()

@@ -5,9 +5,7 @@ import android.util.Log
 import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.*
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +14,7 @@ import com.dmytroandriichuk.cmediacal.LandingActivity
 import com.dmytroandriichuk.cmediacal.R
 import com.dmytroandriichuk.cmediacal.data.ClinicListItem
 import com.dmytroandriichuk.cmediacal.db.entity.ServicePrice
+import com.dmytroandriichuk.cmediacal.fragments.bookmarks.BookmarksViewModel
 import com.dmytroandriichuk.cmediacal.fragments.search.dialog.FilterListDialog
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -26,13 +25,9 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var searchView: SearchView
-    private val searchViewModel: SearchViewModel by lazy {
-        val activity = requireNotNull(this.activity) {
-            "You can only access the viewModel after onActivityCreated()"
-        }
-        ViewModelProvider(this,
-                SearchViewModel.SearchViewModelFactory((activity.application as CMedicalApplication).repository))
-                .get(SearchViewModel::class.java)
+
+    private val searchViewModel: SearchViewModel by activityViewModels {
+        SearchViewModel.SearchViewModelFactory((activity?.application as CMedicalApplication).repository)
     }
 
     val adapter = SearchListParentAdapter(ArrayList(), this)
@@ -57,19 +52,6 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
 
         //provide search for recycleView
         searchView = root.findViewById(R.id.searchView)
-
-        // get all from firebase db
-        if (searchViewModel.firstCall){
-            startQuery()
-            searchViewModel.firstCall = false
-        }
-
-        return root
-    }
-
-    override fun onResume() {
-        super.onResume()
-
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 return false
@@ -81,10 +63,23 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
             }
         })
 
+        // get all from firebase db
+        if (searchViewModel.firstCall){
+            startQuery()
+            searchViewModel.firstCall = false
+            Log.d(TAG, "onCreateView2: ")
+        }
+        Log.d(TAG, "onCreateView: ")
+        return root
+    }
+
+    override fun onResume() {
+        super.onResume()
+
         searchViewModel.searchItems.observe(viewLifecycleOwner, {
             (recyclerView.adapter as SearchListParentAdapter).changeDataSet(it)
-            Log.d(TAG, "onCreateView: apply data")
         })
+        (recyclerView.adapter as SearchListParentAdapter).filter.filter(searchView.query)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -138,6 +133,7 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
     //start filtering list by tags
     override fun startQuery() {
         Log.d(TAG, "startQuery: ")
+//        searchView.setQuery("", false)
         searchViewModel.searchQuery()
     }
 
