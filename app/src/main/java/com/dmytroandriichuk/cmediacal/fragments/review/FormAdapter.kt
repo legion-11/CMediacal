@@ -2,12 +2,14 @@ package com.dmytroandriichuk.cmediacal.fragments.review
 
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.dmytroandriichuk.cmediacal.R
+import java.text.NumberFormat
 
 class FormAdapter(private var dataSet: MutableList<FormItem>,
                   private var spinnerSelector: Map<String, List<String>>,
@@ -62,7 +64,6 @@ class FormAdapter(private var dataSet: MutableList<FormItem>,
                     val newCategoryName = holder.formCategorySpinner.selectedItem as String
                     ArrayAdapter(holder.view.context, android.R.layout.simple_spinner_item, spinnerSelector[newCategoryName]!!.toList())
                             .also { arrayAdapter ->
-                                // Specify the layout to use when the list of choices appears
                                 dataSet[position].positionSubcategory = 0
                                 arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                                 holder.formSubcategorySpinner.apply {
@@ -87,15 +88,14 @@ class FormAdapter(private var dataSet: MutableList<FormItem>,
 
             // todo proper price formating
             holder.price.addTextChangedListener(object : TextWatcher {
+                val name = position.toString()
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                }
 
                 override fun afterTextChanged(s: Editable?) {
-//                    val priceString = holder.price.text.toString()
-//                    if (priceString != "") {
-//                        dataSet[position].price = priceString.toFloat()
-//                    }
+                    Log.d("TAG", "afterTextChanged:$name, $position, ${dataSet.size}")
                 }
             })
         } else {

@@ -154,10 +154,16 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
                 addressET.setText(place?.address)
                 leaveReviewViewModel.clinicAddress = place?.address
                 leaveReviewViewModel.clinicId = place?.id
+                leaveReviewViewModel.clinicData["address"] = place?.address.toString()
+                leaveReviewViewModel.clinicData["name"] = place?.name.toString()
+                leaveReviewViewModel.clinicData["phone"] = place?.phoneNumber.toString()
+
                 if (place?.latLng != null) {
                     //todo make region to short form: Ontario -> ON
                     val region = geocoder.getFromLocation(place.latLng!!.latitude, place.latLng!!.longitude, 1)[0].adminArea
-
+                    leaveReviewViewModel.clinicData["Province"] = region.toString()
+                    leaveReviewViewModel.clinicData["lat"] = place.latLng!!.latitude
+                    leaveReviewViewModel.clinicData["lng"] = place.latLng!!.longitude
                     Log.d("TAG", "onActivityResult: $region")
                     Log.d("TAG", "onActivityResult: ${place.types}")
                 }
