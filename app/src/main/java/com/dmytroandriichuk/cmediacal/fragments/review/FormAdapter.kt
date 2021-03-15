@@ -2,7 +2,6 @@ package com.dmytroandriichuk.cmediacal.fragments.review
 
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -93,14 +92,12 @@ class FormAdapter(private var dataSet: MutableList<FormItem>,
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
                 override fun afterTextChanged(s: Editable?) {
-                    val priceString = holder.price.text.toString()
-                    if (priceString != "") {
-                        dataSet[position].price = priceString.toFloat()
-                    }
+//                    val priceString = holder.price.text.toString()
+//                    if (priceString != "") {
+//                        dataSet[position].price = priceString.toFloat()
+//                    }
                 }
-
             })
-
         } else {
             (holder as ViewHolderAdd).addBtn.setOnClickListener {
                 changeDataSetListener.addFormItem()
@@ -119,8 +116,7 @@ class FormAdapter(private var dataSet: MutableList<FormItem>,
         notifyItemInserted(dataSet.size - 1)
     }
 
-    abstract class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    }
+    abstract class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     class ViewHolderWithSlider(val view: View) : BaseViewHolder(view) {
         val formCategorySpinner: Spinner = view.findViewById(R.id.formCategorySpinner)

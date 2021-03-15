@@ -52,15 +52,9 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
         )
         geocoder = Geocoder(activity, Locale.getDefault())
 
-//        val mToolbar = root.findViewById<Toolbar>(R.id.toolbar2)
-//        (activity as LandingActivity).setSupportActionBar(mToolbar)
-//        mToolbar.setNavigationIcon(R.drawable.ic_log_out)
-//        mToolbar.setNavigationOnClickListener {
-//            FirebaseAuth.getInstance().signOut()
-//            (activity as LandingActivity).finish()
-//        }
-
+        // when you click on addressET it will invoke intent to find place with google autocomplete
         addressET = root.findViewById(R.id.addressET)
+        addressET.setText(leaveReviewViewModel.clinicAddress)
         addressET.setOnClickListener {
             val fieldList = listOf(
                 //todo use id as push refference
@@ -69,6 +63,7 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
                 Place.Field.LAT_LNG,
                 Place.Field.NAME,
                 Place.Field.TYPES,
+                Place.Field.PHONE_NUMBER,
                 //todo check photo
                 Place.Field.PHOTO_METADATAS
             )
@@ -90,17 +85,34 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
         }
         filterResources.recycle()
 
+        //recycler view to input service and it's price
         formRecyclerView = root.findViewById(R.id.formRecyclerView)
         formRecyclerView.layoutManager = LinearLayoutManager(activity)
         formRecyclerView.adapter = FormAdapter(leaveReviewViewModel.formItems, formItemsMap, this)
 
+        //recycler view to input images of bills
         loadingRecyclerView = root.findViewById(R.id.loadingRecyclerView)
         loadingRecyclerView.layoutManager = LinearLayoutManager(activity)
         loadingRecyclerView.adapter = ImagesAdapter(leaveReviewViewModel.loadingItems, this)
         contentResolver = (activity as LandingActivity).contentResolver
 
         root.findViewById<Button>(R.id.button).setOnClickListener {
-            leaveReviewViewModel.putFiles()
+            if (leaveReviewViewModel.clinicId == null) {
+                Toast.makeText(activity, "No address selected", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+            val data = mutableMapOf<String, Any>()
+            val keys = formItemsMap.keys.toList()
+            for (i in leaveReviewViewModel.formItems) {
+                val category = keys[i.positionCategory]
+                val subcategory = formItemsMap[category]?.get(i.positionSubcategory)
+                data["$category: $subcategory"] = i.price
+                data["tag $category: $subcategory"] = true
+            }
+
+            data["clinic_id"] = leaveReviewViewModel.clinicId!!
+            data["validated"] = false
+            leaveReviewViewModel.putFiles(data)
         }
 
         leaveReviewViewModel.progresses.observe(viewLifecycleOwner, {
@@ -124,6 +136,7 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        // request for getting photo from galery
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.data != null) {
             val filePath = data.data!!
             try {
@@ -134,13 +147,17 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
             } catch (e: IOException) {
                 e.printStackTrace()
             }
+        // request for google autocomplete
         } else if (requestCode == PICK_ADDRESS_REQUEST) {
             if (resultCode == RESULT_OK) {
                 val place = data?.let { Autocomplete.getPlaceFromIntent(it) }
                 addressET.setText(place?.address)
+                leaveReviewViewModel.clinicAddress = place?.address
+                leaveReviewViewModel.clinicId = place?.id
                 if (place?.latLng != null) {
                     //todo make region to short form: Ontario -> ON
                     val region = geocoder.getFromLocation(place.latLng!!.latitude, place.latLng!!.longitude, 1)[0].adminArea
+
                     Log.d("TAG", "onActivityResult: $region")
                     Log.d("TAG", "onActivityResult: ${place.types}")
                 }
@@ -154,13 +171,13 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
     }
 
 
-    override fun removeItem(position: Int) {
+    override fun removeImageItem(position: Int) {
         if (leaveReviewViewModel.isUploading) return
         leaveReviewViewModel.loadingItems.removeAt(position)
         (loadingRecyclerView.adapter as ImagesAdapter).removeItem(position)
     }
 
-    override fun addItem() {
+    override fun addImageItem() {
         showFileChooser()
     }
 
@@ -179,6 +196,4 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
         leaveReviewViewModel.formItems.add(FormAdapter.FormItem())
         (formRecyclerView.adapter as FormAdapter).onItemAdded()
     }
-
-
 }

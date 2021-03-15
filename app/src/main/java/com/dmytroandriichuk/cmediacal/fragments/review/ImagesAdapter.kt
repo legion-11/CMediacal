@@ -2,7 +2,6 @@ package com.dmytroandriichuk.cmediacal.fragments.review
 
 import android.graphics.Bitmap
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -46,13 +45,13 @@ class ImagesAdapter(private var dataSet: MutableList<LoadingItem>, private val d
             holder as ViewHolderWithImage
             val item = dataSet[position]
             holder.deleteBtn.setOnClickListener {
-                deleteItemListener.removeItem(position)
+                deleteItemListener.removeImageItem(position)
             }
             holder.image.setImageBitmap(item.bitmap)
             holder.progress.progress = item.progress
         } else {
             (holder as ViewHolderAdd).addBtn.setOnClickListener {
-                deleteItemListener.addItem()
+                deleteItemListener.addImageItem()
             }
         }
     }
@@ -73,8 +72,8 @@ class ImagesAdapter(private var dataSet: MutableList<LoadingItem>, private val d
     }
 
     interface DeleteItemListener {
-        fun removeItem(position: Int)
-        fun addItem()
+        fun removeImageItem(position: Int)
+        fun addImageItem()
     }
 
     class LoadingItem(val bitmap: Bitmap, val uri: Uri, var progress: Int = 0)

@@ -10,20 +10,22 @@ import com.google.firebase.storage.ktx.storage
 class LeaveReviewViewModel : ViewModel() {
 
     private var imageRef = Firebase.storage.reference.child("Images")
-    private val firebaseFirestoreDB = FirebaseFirestore.getInstance().collection("Images")
+    private val firestoreImagesRef = FirebaseFirestore.getInstance().collection("Images")
 
     val loadingItems: MutableList<ImagesAdapter.LoadingItem> = ArrayList()
-    val formItems: MutableList<FormAdapter.FormItem> = ArrayList()
+    val formItems: MutableList<FormAdapter.FormItem> = arrayListOf(FormAdapter.FormItem())
 
     val progresses: MutableLiveData<Array<Int>> = MutableLiveData()
     var isUploading = false
+    var clinicId: String? = null
+    var clinicAddress: String? = null
 
-    fun putFiles() {
+    fun putFiles(data: Map<String, Any>) {
         if (loadingItems.size == 0) return
         progresses.value = Array(loadingItems.size) { 0 }
 
         // push new doc to firestore to get unique id
-        firebaseFirestoreDB.add(hashMapOf("somedata" to "somedata"))
+        firestoreImagesRef.add(data)
             .addOnSuccessListener { docRef ->
                 val ref = imageRef.child(docRef.id)
                 isUploading = true
