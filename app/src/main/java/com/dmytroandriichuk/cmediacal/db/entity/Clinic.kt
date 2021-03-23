@@ -13,6 +13,7 @@ data class Clinic (val id: String,
                    val address : String,
                    val lat: Double = 0.0,
                    val lng: Double = 0.0,
+                   val phone: String = "",
                    val date : Long = Date().time,
                    @PrimaryKey val crossRefId: String = id + userEmail,
 ) {

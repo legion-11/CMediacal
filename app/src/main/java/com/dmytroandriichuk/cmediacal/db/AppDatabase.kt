@@ -12,7 +12,7 @@ import com.dmytroandriichuk.cmediacal.db.entity.ServicePrice
 
 @Database(
     entities = [Clinic::class, ServicePrice::class],
-    version = 1
+    version = 2
 )
 //create singleton of db
 abstract class AppDatabase : RoomDatabase() {

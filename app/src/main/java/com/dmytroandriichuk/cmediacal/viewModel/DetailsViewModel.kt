@@ -9,7 +9,10 @@ import com.dmytroandriichuk.cmediacal.db.entity.ServicePrice
 import com.dmytroandriichuk.cmediacal.data.ClinicListItem
 import com.dmytroandriichuk.cmediacal.db.DatabaseRepository
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 
 class DetailsViewModel(private val filters: List<String>, private val localDBRepository: DatabaseRepository) : ViewModel() {
     private val firebaseFirestoreDB = FirebaseFirestore.getInstance()
@@ -17,6 +20,10 @@ class DetailsViewModel(private val filters: List<String>, private val localDBRep
     private val _searchDoc = MutableLiveData<ClinicListItem>()
     val searchDoc: LiveData<ClinicListItem> = _searchDoc
 
+    private val firestoreImagesRef = FirebaseFirestore.getInstance().collection("Images").whereEqualTo("validated", true)
+
+    private val _imagesRef = MutableLiveData<List<String>>()
+    val imagesRef: LiveData<List<String>> = _imagesRef
 
     fun insert(clinic: Clinic) {
         localDBRepository.insert(clinic)
@@ -46,6 +53,17 @@ class DetailsViewModel(private val filters: List<String>, private val localDBRep
                     _searchDoc.value = ClinicListItem(clinic, services)
                 }
     }
+
+    fun getImages(tag: String, id: String) {
+        firestoreImagesRef
+                .whereEqualTo("clinic_id", id)
+                .whereEqualTo(tag, true)
+                .get()
+                .addOnSuccessListener { docs ->
+                    _imagesRef.value = docs.map { it.id }
+                }
+    }
+
     class DetailsViewModelFactory(private val filters: List<String>, private val localDBRepository: DatabaseRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(DetailsViewModel::class.java)) {

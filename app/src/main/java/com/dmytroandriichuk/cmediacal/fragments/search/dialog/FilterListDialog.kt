@@ -48,7 +48,7 @@ class FilterListDialog(private val listener: FilterListDialogListener): AppCompa
 
             recyclerView.adapter = FilterListDialogAdapter(filterItems, listener)
             builder.setPositiveButton("Apply") {
-                        dialog, _ ->  listener.startQuery()
+                    _, _ ->  listener.startQuery()
                     }
             builder.setNegativeButton("Close") {
                 dialog, _ ->  dialog.dismiss()

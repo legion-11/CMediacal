@@ -1,14 +1,14 @@
-package com.dmytroandriichuk.cmediacal
+package com.dmytroandriichuk.cmediacal.adapter
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.dmytroandriichuk.cmediacal.R
 import com.dmytroandriichuk.cmediacal.db.entity.ServicePrice
-import com.dmytroandriichuk.cmediacal.fragments.common.ClinicListChildAdapter
 
-class DetailsListAdapter(private val dataSet: List<ServicePrice>): RecyclerView.Adapter<DetailsListAdapter.ViewHolder>() {
+class DetailsListAdapter(private val dataSet: List<ServicePrice>, private val itemPressListener: ItemPressListener): RecyclerView.Adapter<DetailsListAdapter.ViewHolder>() {
 
     private lateinit var textFormat: String
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -25,13 +25,21 @@ class DetailsListAdapter(private val dataSet: List<ServicePrice>): RecyclerView.
         val item = dataSet[position]
         holder.nameTV.text = item.serviceName
         holder.priceTV.text = textFormat.format(item.price)
+
+        holder.view.setOnClickListener {
+            itemPressListener.getImages("tag ${item.serviceName}")
+        }
     }
 
     override fun getItemCount(): Int = dataSet.size
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         val nameTV: TextView = view.findViewById(R.id.search_item_service_name)
         val priceTV: TextView = view.findViewById(R.id.search_item_service_price)
     }
 
+
+    interface ItemPressListener {
+        fun getImages(tag: String)
+    }
 }
