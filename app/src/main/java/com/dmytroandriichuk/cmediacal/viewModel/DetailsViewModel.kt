@@ -1,7 +1,6 @@
 package com.dmytroandriichuk.cmediacal.viewModel
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.*
 import com.dmytroandriichuk.cmediacal.GlideApp
@@ -19,6 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
 import kotlin.random.Random
 
 class DetailsViewModel(private val filters: List<String>, private val localDBRepository: DatabaseRepository) : ViewModel() {
@@ -30,7 +30,7 @@ class DetailsViewModel(private val filters: List<String>, private val localDBRep
     private val _searchValidationResult: MutableLiveData<ValidationData> = MutableLiveData()
     val searchValidationResult: LiveData<ValidationData> = _searchValidationResult
 
-    val random = Random(321)
+    private val random = Random(Date().time)
     private val firestoreImagesRef = firebaseFirestoreDB.collection("Images")
 
     private val _imagesId = MutableLiveData<List<String>>()
@@ -72,7 +72,6 @@ class DetailsViewModel(private val filters: List<String>, private val localDBRep
             .get()
             .addOnSuccessListener { docsImages ->
                 val size = docsImages.documents.size
-                Log.d("DetailsViewModel", "searchForValidation: $size")
                 val chosenDoc = docsImages.documents[random.nextInt(size)]
                 val services = parseAllServices(chosenDoc)
                 //load clinic data
@@ -82,6 +81,7 @@ class DetailsViewModel(private val filters: List<String>, private val localDBRep
                         .addOnSuccessListener { docClinic ->
                             val clinic = parseClinic(docClinic)
                             //load images itself
+                            Log.d("TAG", "searchForValidation: ${chosenDoc.id}")
                             imageRef.child(chosenDoc.id).listAll().addOnSuccessListener{ imageSnapshots ->
                                 CoroutineScope(Dispatchers.IO).launch {
                                     val listOfImages = Array(imageSnapshots.items.size) { i ->

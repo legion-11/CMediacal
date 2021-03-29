@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dmytroandriichuk.cmediacal.adapter.details.DetailsServicesListAdapter
 import com.dmytroandriichuk.cmediacal.data.ClinicListItem
+import com.dmytroandriichuk.cmediacal.data.DataHolder
 import com.dmytroandriichuk.cmediacal.dialog.ImagesDialog
 import com.dmytroandriichuk.cmediacal.fragments.search.dialog.filter.FilterDialogListItem
 import com.dmytroandriichuk.cmediacal.viewModel.DetailsViewModel
@@ -35,6 +36,7 @@ class DetailsActivity : AppCompatActivity(), OnMapReadyCallback, DetailsServices
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
+
         val clinicData = intent.getParcelableExtra<ClinicListItem>("clinicListItem")!!
         val clinic = clinicData.clinic
         val toolbar: Toolbar = findViewById(R.id.toolbar)
@@ -79,6 +81,7 @@ class DetailsActivity : AppCompatActivity(), OnMapReadyCallback, DetailsServices
                 .get(DetailsViewModel::class.java)
 
         val mapView: MapView = findViewById(R.id.details_lite_list_row_map)
+        mapView.isClickable = false
         with(mapView) {
             onCreate(null)
             getMapAsync(this@DetailsActivity)
@@ -113,7 +116,7 @@ class DetailsActivity : AppCompatActivity(), OnMapReadyCallback, DetailsServices
         if (shouldOpenValidationScreen) {
             detailsViewModel.searchValidationResult.observe(this, {
                 intent = Intent(this@DetailsActivity, ValidateImageActivity::class.java)
-                intent.putExtra("data", it)
+                DataHolder.validationData = it
                 startActivity(intent)
             })
             detailsViewModel.searchForValidation(this)

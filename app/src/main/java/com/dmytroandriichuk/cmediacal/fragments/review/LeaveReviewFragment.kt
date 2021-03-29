@@ -16,7 +16,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,7 +27,6 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.ktx.Firebase
 import java.io.IOException
 import java.util.*
 
@@ -36,8 +34,6 @@ import java.util.*
 class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAdapter.ChangeDataSetListener {
 
     //constant to track image chooser intent
-    private val PICK_IMAGE_REQUEST = 100
-    private val PICK_ADDRESS_REQUEST = 200
     private val leaveReviewViewModel: LeaveReviewViewModel by activityViewModels()
     private lateinit var contentResolver: ContentResolver
     private lateinit var loadingRecyclerView: RecyclerView
@@ -101,7 +97,7 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
         loadingRecyclerView.adapter = ImagesAdapter(leaveReviewViewModel.loadingItems, this)
         contentResolver = (activity as LandingActivity).contentResolver
 
-        root.findViewById<Button>(R.id.button).setOnClickListener {
+        root.findViewById<Button>(R.id.confirmButton).setOnClickListener {
             if (leaveReviewViewModel.clinicId == null) {
                 Toast.makeText(activity, "No address selected", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
@@ -110,27 +106,31 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
                 Toast.makeText(activity, "You are not authenticated", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
-            val data = mutableMapOf<String, Any>()
+            val imagesData = mutableMapOf<String, Any>()
             val keys = formItemsMap.keys.toList()
             for (i in leaveReviewViewModel.formItems) {
                 val category = keys[i.positionCategory]
                 val subcategory = formItemsMap[category]?.get(i.positionSubcategory)
-                data["$category: $subcategory"] = i.price
-                data["tag $category: $subcategory"] = true
+                imagesData["$category: $subcategory"] = i.price
+                imagesData["tag $category: $subcategory"] = true
             }
 
-            data["clinic_id"] = leaveReviewViewModel.clinicId!!
-            data["validated"] = false
-            data["userId"] = FirebaseAuth.getInstance().currentUser!!.uid
-            leaveReviewViewModel.putFiles(data)
+            imagesData["clinic_id"] = leaveReviewViewModel.clinicId!!
+            imagesData["validated"] = false
+            imagesData["userId"] = FirebaseAuth.getInstance().currentUser!!.uid
+            leaveReviewViewModel.putFiles(imagesData)
         }
 
         leaveReviewViewModel.progresses.observe(viewLifecycleOwner, {
             for (i in it.indices) {
                 leaveReviewViewModel.loadingItems[i].progress = it[i]
                 (loadingRecyclerView.adapter as ImagesAdapter).notifyDataSetChanged()
-                Log.d("LeaveReviewFragment", "onCreateView: ${it[i]}")
+                Log.d("LeaveReviewFragment", " progress position $i: ${it[i]}")
             }
+        })
+
+        leaveReviewViewModel.message.observe(viewLifecycleOwner, { message->
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
         })
 
         return root
@@ -168,8 +168,8 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
             if (resultCode == RESULT_OK) {
                 val place = data?.let { Autocomplete.getPlaceFromIntent(it) }
                 addressET.setText(place?.address)
-                leaveReviewViewModel.clinicAddress = place?.address
                 leaveReviewViewModel.clinicId = place?.id
+                leaveReviewViewModel.clinicAddress = place?.address
                 leaveReviewViewModel.clinicData["address"] = place?.address.toString()
                 leaveReviewViewModel.clinicData["name"] = place?.name.toString()
                 leaveReviewViewModel.clinicData["phone"] = place?.phoneNumber.toString()
@@ -177,7 +177,7 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
                 if (place?.latLng != null) {
                     //todo make region to short form: Ontario -> ON
                     val region = geocoder.getFromLocation(place.latLng!!.latitude, place.latLng!!.longitude, 1)[0].adminArea
-                    leaveReviewViewModel.clinicData["Province"] = region.toString()
+                    leaveReviewViewModel.clinicData["Province"] = STATES[region.toString()] ?: ""
                     leaveReviewViewModel.clinicData["lat"] = place.latLng!!.latitude
                     leaveReviewViewModel.clinicData["lng"] = place.latLng!!.longitude
                     Log.d("TAG", "onActivityResult: $region")
@@ -217,5 +217,26 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
     override fun addFormItem() {
         leaveReviewViewModel.formItems.add(FormAdapter.FormItem())
         (formRecyclerView.adapter as FormAdapter).onItemAdded()
+    }
+
+    companion object {
+        // todo check states
+        val STATES = hashMapOf(
+                "Alberta" to "AB",
+                "British Columbia" to "BC",
+                "Manitoba" to "MB",
+                "New Brunswick" to "NB",
+                "Newfoundland and Labrador" to "NL",
+                "Northwest Territories" to "NT",
+                "Nova Scotia" to "NS",
+                "Nunavut" to "NU",
+                "Ontario" to "ON",
+                "Prince Edward Island" to "PE",
+                "Quebec" to "QC",
+                "Saskatchewan" to "SK",
+                "Yukon Territory" to "YT",
+        )
+        const val PICK_IMAGE_REQUEST = 100
+        const val PICK_ADDRESS_REQUEST = 200
     }
 }

@@ -82,10 +82,11 @@ class SearchViewModel(private val localDBRepository: DatabaseRepository) : ViewM
 
             val clinic = Clinic( doc.id,
                     getUser(),
-                    doc["name"] as String? ?: "placeholder",
-                    doc["address"] as String? ?: "placeholder",
+                    doc["name"] as String? ?: "",
+                    doc["address"] as String? ?: "",
                     doc["lat"] as Double? ?: 0.0,
                     doc["lng"] as Double? ?: 0.0,
+                    doc["phone"] as String? ?: "No phone",
                     )
             val services = filters.map {
                 ServicePrice(0, it, doc[it] as Double, clinic.crossRefId)

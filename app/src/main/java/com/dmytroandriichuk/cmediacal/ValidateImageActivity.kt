@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.dmytroandriichuk.cmediacal.adapter.validate.ValidateViewPagerAdapter
 import com.dmytroandriichuk.cmediacal.data.ClinicListItem
+import com.dmytroandriichuk.cmediacal.data.DataHolder
 import com.dmytroandriichuk.cmediacal.data.ValidationData
 import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
@@ -36,17 +37,20 @@ class ValidateImageActivity : AppCompatActivity(), ValidateViewPagerAdapter.OnIm
         window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
         functions = Firebase.functions
         auth = FirebaseAuth.getInstance()
+
         descriptionTV = findViewById(R.id.validateTextView)
-        descriptionTV.movementMethod = ScrollingMovementMethod()
         descriptionCard = findViewById(R.id.validateCard)
-        val data = intent.getParcelableExtra<ValidationData>("data")
-        Log.d("ValidateImageActivity", "onCreate: $data")
+
+        val data = DataHolder.validationData
         setText(data?.clinicListItem)
         viewPager2 = findViewById(R.id.validateViewPager2)
-        viewPager2.adapter = ValidateViewPagerAdapter(data?.images ?: emptyArray(), this)
-        val buttonYes: Button = findViewById(R.id.trueButton)
-        buttonYes.setOnClickListener {
+        val array = data?.images ?: emptyArray()
+
+        viewPager2.adapter = ValidateViewPagerAdapter(array, this)
+
+        findViewById<Button>(R.id.trueButton).setOnClickListener {
             Log.d("ValidateImageActivity", "onCreate: press yes")
+            DataHolder.validationData = null
             if (auth.currentUser != null) {
                 val resultData = hashMapOf(
                         "result" to true,
@@ -57,10 +61,10 @@ class ValidateImageActivity : AppCompatActivity(), ValidateViewPagerAdapter.OnIm
             }
             finish()
         }
-        val buttonNo: Button = findViewById(R.id.falseButton)
 
-        buttonNo.setOnClickListener {
+        findViewById<Button>(R.id.falseButton).setOnClickListener {
             Log.d("ValidateImageActivity", "onCreate: press no")
+            DataHolder.validationData = null
             if (auth.currentUser != null) {
                 val resultData = hashMapOf(
                         "result" to false,

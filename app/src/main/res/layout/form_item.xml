@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="@+id/formPriceET"
         app:layout_constraintEnd_toStartOf="@+id/formPriceET"
-        app:layout_constraintHorizontal_weight="4"
+        app:layout_constraintHorizontal_weight="5"
         app:layout_constraintStart_toEndOf="@+id/formCategorySpinner"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -41,9 +41,13 @@
         android:id="@+id/formPriceET"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:digits="0123456789. $"
         android:ems="10"
         android:inputType="numberDecimal"
-        android:textSize="14sp"
+        android:lines="1"
+        android:scrollbars="none"
+        android:singleLine="true"
+        android:textSize="16sp"
         app:layout_constraintEnd_toStartOf="@+id/formCancelButton"
         app:layout_constraintStart_toEndOf="@+id/formSubcategorySpinner"
         app:layout_constraintTop_toTopOf="parent"
