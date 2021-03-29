@@ -170,7 +170,6 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
         }
     }
 
-
     //example for user auth from https://developers.google.com/identity/sign-in/android/start-integrating
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)

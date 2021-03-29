@@ -27,6 +27,8 @@ import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.ktx.Firebase
 import java.io.IOException
 import java.util.*
 
@@ -51,9 +53,9 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
         val root = inflater.inflate(R.layout.fragment_leave_review, container, false)
         Places.initialize(
             (activity as LandingActivity).applicationContext,
-            getString(R.string.google_maps_key)
+            getString(R.string.google_maps_key), Locale.CANADA
         )
-        geocoder = Geocoder(activity, Locale.getDefault())
+        geocoder = Geocoder(activity, Locale.CANADA)
 
         // when you click on addressET it will invoke intent to find place with google autocomplete
         addressET = root.findViewById(R.id.addressET)
@@ -104,6 +106,10 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
                 Toast.makeText(activity, "No address selected", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
+            if (FirebaseAuth.getInstance().currentUser == null) {
+                Toast.makeText(activity, "You are not authenticated", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
             val data = mutableMapOf<String, Any>()
             val keys = formItemsMap.keys.toList()
             for (i in leaveReviewViewModel.formItems) {
@@ -115,6 +121,7 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
 
             data["clinic_id"] = leaveReviewViewModel.clinicId!!
             data["validated"] = false
+            data["userId"] = FirebaseAuth.getInstance().currentUser!!.uid
             leaveReviewViewModel.putFiles(data)
         }
 

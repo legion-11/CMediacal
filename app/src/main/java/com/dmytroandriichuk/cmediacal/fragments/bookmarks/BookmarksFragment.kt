@@ -51,6 +51,6 @@ class BookmarksFragment : Fragment(), ClinicListParentAdapter.ItemClickListener 
     }
 
     override fun itemClicked(item: ClinicListItem) {
-        (activity as LandingActivity).itemClicked(item)
+        (activity as LandingActivity).openDetailsActivity(item)
     }
 }

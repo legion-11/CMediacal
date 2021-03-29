@@ -1,5 +1,6 @@
 package com.dmytroandriichuk.cmediacal.fragments.search
 
+import android.content.Context
 import androidx.lifecycle.*
 import com.dmytroandriichuk.cmediacal.data.ClinicListItem
 import com.dmytroandriichuk.cmediacal.db.DatabaseRepository

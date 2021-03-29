@@ -7,9 +7,8 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.viewpager2.widget.ViewPager2
-import com.dmytroandriichuk.cmediacal.DetailsActivity
 import com.dmytroandriichuk.cmediacal.R
-import com.dmytroandriichuk.cmediacal.adapter.ViewPagerParentAdapter
+import com.dmytroandriichuk.cmediacal.adapter.details.ViewPagerParentAdapter
 
 class ImagesDialog(private val imagesId: List<String>): AppCompatDialogFragment(){
 

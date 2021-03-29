@@ -1,6 +1,6 @@
-package com.dmytroandriichuk.cmediacal.fragments.search.dialog.model
+package com.dmytroandriichuk.cmediacal.fragments.search.dialog.filter
 
-data class DialogFilterListItem(
+data class FilterDialogListItem(
     //filter category
     val title: String,
     // list of filters in category (small, medium, ...)

@@ -1,4 +1,4 @@
-package com.dmytroandriichuk.cmediacal.adapter
+package com.dmytroandriichuk.cmediacal.adapter.details
 
 import android.content.Context
 import android.util.Log
@@ -6,9 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager.widget.ViewPager
 import androidx.viewpager2.widget.ViewPager2
-import com.dmytroandriichuk.cmediacal.DetailsActivity
 import com.dmytroandriichuk.cmediacal.R
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage

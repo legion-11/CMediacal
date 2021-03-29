@@ -31,4 +31,5 @@
     <color name="colorTextInputOutlineDefaultColor">@color/dark_grey</color>
     <color name="colorTextInputOutlineSelectedColor">@color/purple_400</color>
     <color name="colorDivider">@color/black</color>
+    <color name="colorTransparentTextView">@color/transparent_black</color>
 </resources>

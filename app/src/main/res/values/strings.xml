@@ -1,5 +1,14 @@
 <resources>
 
+    <array name="filters_resources">
+        <item>@array/filters7</item>
+        <item>@array/filters1</item>
+        <item>@array/filters2</item>
+        <item>@array/filters3</item>
+        <item>@array/filters4</item>
+        <item>@array/filters4</item>
+        <item>@array/filters6</item>
+    </array>
     <string name="app_name">CMedical</string>
     <string name="full_name">Full Name</string>
     <string name="email">Email</string>
@@ -22,21 +31,32 @@
     <string name="placeholder">placeholder</string>
     <string name="price_format">%s$</string>
     <string name="or">OR</string>
+
     <string name="total_price">Total price</string>
 
     <string name="clinic_info_button_image">clinic info button image</string>
 
     <string name="title_activity_maps">Map</string>
 
-    <array name="filters_resources">
-        <item>@array/filters7</item>
-        <item>@array/filters1</item>
-        <item>@array/filters2</item>
-        <item>@array/filters3</item>
-        <item>@array/filters4</item>
-        <item>@array/filters4</item>
-        <item>@array/filters6</item>
-    </array>
+    <string name="cheese_ipsum">Jarlsberg lancashire edam. Dolcelatte hard cheese brie st. agur blue
+    cheese caerphilly bavarian bergkase cheese and biscuits mascarpone. Cheeseburger swiss bavarian
+    bergkase cream cheese fromage frais cheesy feet port-salut airedale. St. agur blue cheese rubber
+    cheese caerphilly cheddar cheesecake cream cheese manchego lancashire. Roquefort squirty cheese
+    the big cheese.</string>
+
+    <string name="prices">Prices</string>
+
+    <string name="phone">Phone</string>
+
+    <string name="address">Address</string>
+
+    <string name="add_to_bookmarks">Add to bookmarks</string>
+
+    <string name="fill_details">Fill Details</string>
+
+    <string name="add_bill_photo">Add Bill Photo</string>
+    <string name="user_input">User input</string>
+
 
     <string-array name="filter_titles">
         <item>Province and territorial codes</item>
@@ -47,29 +67,24 @@
         <item>Check up</item>
         <item>Other</item>
     </string-array>
-
     <string-array name="filters1">
         <item>Small</item>
         <item>Medium</item>
         <item>Large</item>
         <item>Huge</item>
     </string-array>
-
     <string-array name="filters2">
         <item>Front Tooth</item>
         <item>Molar</item>
     </string-array>
-
     <string-array name="filters3">
         <item>Simple</item>
         <item>Complicated</item>
     </string-array>
-
     <string-array name="filters4">
         <item>Adult</item>
         <item>Child</item>
     </string-array>
-
     <string-array name="filters6">
         <item>X-rays</item>
         <item>Sedation</item>
@@ -77,7 +92,6 @@
         <item>Veneer</item>
         <item>Implant</item>
     </string-array>
-
     <string-array name="filters7">
         <item>AB</item>
         <item>BC</item>
@@ -93,17 +107,4 @@
         <item>SK</item>
         <item>YT</item>
     </string-array>
-
-
-    <string name="cheese_ipsum">Jarlsberg lancashire edam. Dolcelatte hard cheese brie st. agur blue
-    cheese caerphilly bavarian bergkase cheese and biscuits mascarpone. Cheeseburger swiss bavarian
-    bergkase cream cheese fromage frais cheesy feet port-salut airedale. St. agur blue cheese rubber
-    cheese caerphilly cheddar cheesecake cream cheese manchego lancashire. Roquefort squirty cheese
-    the big cheese.</string>
-    <string name="prices">Prices</string>
-    <string name="phone">Phone</string>
-    <string name="address">Address</string>
-    <string name="add_to_bookmarks">Add to bookmarks</string>
-    <string name="fill_details">Fill Details</string>
-    <string name="add_bill_photo">Add Bill Photo</string>
 </resources>

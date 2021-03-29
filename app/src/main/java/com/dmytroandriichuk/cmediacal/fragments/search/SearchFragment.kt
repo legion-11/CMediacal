@@ -1,31 +1,32 @@
 package com.dmytroandriichuk.cmediacal.fragments.search
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.*
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dmytroandriichuk.cmediacal.CMedicalApplication
 import com.dmytroandriichuk.cmediacal.LandingActivity
 import com.dmytroandriichuk.cmediacal.R
+import com.dmytroandriichuk.cmediacal.ValidateImageActivity
 import com.dmytroandriichuk.cmediacal.data.ClinicListItem
 import com.dmytroandriichuk.cmediacal.db.entity.ServicePrice
-import com.dmytroandriichuk.cmediacal.fragments.bookmarks.BookmarksViewModel
-import com.dmytroandriichuk.cmediacal.fragments.search.dialog.FilterListDialog
+import com.dmytroandriichuk.cmediacal.fragments.search.dialog.filter.FilterListDialog
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
+
 
 //first fragment of landing screen, provides search for clinics depending on search options
 class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, SearchListParentAdapter.ItemClickListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var searchView: SearchView
-
     private val searchViewModel: SearchViewModel by activityViewModels {
         SearchViewModel.SearchViewModelFactory((activity?.application as CMedicalApplication).repository)
     }
@@ -33,9 +34,9 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
     val adapter = SearchListParentAdapter(ArrayList(), this)
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_search, container, false)
 
@@ -45,6 +46,7 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
         (activity as LandingActivity).setSupportActionBar(mToolbar)
         //replace toolbar back button icon with our icon
         mToolbar.setNavigationIcon(R.drawable.ic_log_out)
+
 
         recyclerView = root.findViewById<RecyclerView>(R.id.searchListRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(activity)
@@ -107,11 +109,11 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
             FirebaseAuth.getInstance().signOut()
             //if you do not sign out from google you can not choose other user
             GoogleSignIn.getClient(
-                (activity as LandingActivity), GoogleSignInOptions.Builder(
+                    (activity as LandingActivity), GoogleSignInOptions.Builder(
                     GoogleSignInOptions.DEFAULT_SIGN_IN
-                ).build()
+            ).build()
             )
-                .signOut()
+                    .signOut()
             (activity as LandingActivity).finish()
             true
         }
@@ -135,6 +137,7 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
         Log.d(TAG, "startQuery: ")
 //        searchView.setQuery("", false)
         searchViewModel.searchQuery()
+
     }
 
     //add tag for filtering
@@ -180,6 +183,6 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
     }
 
     override fun itemClicked(item: ClinicListItem) {
-        (activity as LandingActivity).itemClicked(item)
+        (activity as LandingActivity).openDetailsActivity(item)
     }
 }

@@ -1,4 +1,4 @@
-package com.dmytroandriichuk.cmediacal.fragments.search.dialog
+package com.dmytroandriichuk.cmediacal.fragments.search.dialog.filter
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dmytroandriichuk.cmediacal.R
-import com.dmytroandriichuk.cmediacal.fragments.search.dialog.model.DialogFilterListItem
 
 //Dialog that provides user with filtering options for recycleView
 class FilterListDialog(private val listener: FilterListDialogListener): AppCompatDialogFragment(){
@@ -42,7 +41,7 @@ class FilterListDialog(private val listener: FilterListDialogListener): AppCompa
             val filterResources: TypedArray = resources.obtainTypedArray(R.array.filters_resources)
             val filterItems = List(titles.size) { i ->
                 val arrayId = filterResources.getResourceId(i, 0)
-                DialogFilterListItem(titles[i], resources.getStringArray(arrayId).toList())
+                FilterDialogListItem(titles[i], resources.getStringArray(arrayId).toList())
             }
             filterResources.recycle()
 

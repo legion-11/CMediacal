@@ -1,29 +1,40 @@
 package com.dmytroandriichuk.cmediacal.viewModel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import android.content.Context
+import android.graphics.Bitmap
+import android.util.Log
+import androidx.lifecycle.*
+import com.dmytroandriichuk.cmediacal.GlideApp
 import com.dmytroandriichuk.cmediacal.db.entity.Clinic
 import com.dmytroandriichuk.cmediacal.db.entity.ServicePrice
 import com.dmytroandriichuk.cmediacal.data.ClinicListItem
+import com.dmytroandriichuk.cmediacal.data.ValidationData
 import com.dmytroandriichuk.cmediacal.db.DatabaseRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.random.Random
 
 class DetailsViewModel(private val filters: List<String>, private val localDBRepository: DatabaseRepository) : ViewModel() {
     private val firebaseFirestoreDB = FirebaseFirestore.getInstance()
+    private var imageRef = Firebase.storage.reference.child("Images")
     private val mAuth = FirebaseAuth.getInstance()
     private val _searchDoc = MutableLiveData<ClinicListItem>()
     val searchDoc: LiveData<ClinicListItem> = _searchDoc
+    private val _searchValidationResult: MutableLiveData<ValidationData> = MutableLiveData()
+    val searchValidationResult: LiveData<ValidationData> = _searchValidationResult
 
-    private val firestoreImagesRef = FirebaseFirestore.getInstance().collection("Images").whereEqualTo("validated", true)
+    val random = Random(321)
+    private val firestoreImagesRef = firebaseFirestoreDB.collection("Images")
 
-    private val _imagesRef = MutableLiveData<List<String>>()
-    val imagesRef: LiveData<List<String>> = _imagesRef
+    private val _imagesId = MutableLiveData<List<String>>()
+    val imagesId: LiveData<List<String>> = _imagesId
 
     fun insert(clinic: Clinic) {
         localDBRepository.insert(clinic)
@@ -36,32 +47,87 @@ class DetailsViewModel(private val filters: List<String>, private val localDBRep
     fun getClinicData(id: String){
         firebaseFirestoreDB.collection("Dental Clinics").document(id).get()
                 .addOnSuccessListener { doc ->
-                    val clinic = Clinic(
-                            doc.id,
-                            mAuth.currentUser?.email ?: "default",
-                            doc["name"] as String? ?: "placeholder",
-                            doc["address"] as String? ?: "placeholder",
-                            doc["lat"] as Double? ?: 0.0,
-                            doc["lng"] as Double? ?: 0.0,
-                    )
-                    val services = filters.mapNotNull { serviceName ->
-                        val price = doc[serviceName] as Double?
-                        price?.let {
-                            ServicePrice(0, serviceName, price , clinic.crossRefId)
-                        }
-                    }
+                    val clinic = parseClinic(doc)
+                    val services = parseAllServices(doc)
                     _searchDoc.value = ClinicListItem(clinic, services)
                 }
     }
 
     fun getImages(tag: String, id: String) {
         firestoreImagesRef
+                .whereEqualTo("validated", true)
                 .whereEqualTo("clinic_id", id)
                 .whereEqualTo(tag, true)
                 .get()
                 .addOnSuccessListener { docs ->
-                    _imagesRef.value = docs.map { it.id }
+                    _imagesId.value = docs.map { it.id }
                 }
+    }
+
+    fun searchForValidation(context: Context) {
+        //load images data
+        firestoreImagesRef
+            .whereEqualTo("validated", false)
+            .limit(20)
+            .get()
+            .addOnSuccessListener { docsImages ->
+                val size = docsImages.documents.size
+                Log.d("DetailsViewModel", "searchForValidation: $size")
+                val chosenDoc = docsImages.documents[random.nextInt(size)]
+                val services = parseAllServices(chosenDoc)
+                //load clinic data
+                firebaseFirestoreDB.collection("Dental Clinics")
+                        .document(chosenDoc["clinic_id"] as String)
+                        .get()
+                        .addOnSuccessListener { docClinic ->
+                            val clinic = parseClinic(docClinic)
+                            //load images itself
+                            imageRef.child(chosenDoc.id).listAll().addOnSuccessListener{ imageSnapshots ->
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    val listOfImages = Array(imageSnapshots.items.size) { i ->
+                                        GlideApp.with(context)
+                                                .asBitmap()
+                                                .load(imageSnapshots.items[i])
+                                                .submit()
+                                                .get()
+                                    }
+                                    withContext(Dispatchers.Main) {
+                                        _searchValidationResult.value = ValidationData(chosenDoc.id, ClinicListItem(clinic, services), listOfImages)
+                                    }
+                                }
+                            }
+                            .addOnFailureListener {
+                                Log.d("DetailsViewModel", "searchForValidation: ${it.message}")
+                            }
+                        }
+                        .addOnFailureListener {
+                            Log.d("DetailsViewModel", "searchForValidation: ${it.message}")
+                        }
+            }
+            .addOnFailureListener {
+                Log.d("DetailsViewModel", "searchForValidation: ${it.message}")
+            }
+    }
+
+    private fun parseAllServices(doc: DocumentSnapshot): List<ServicePrice>{
+        return filters.mapNotNull { serviceName ->
+            val userEmail = mAuth.currentUser?.email ?: "default"
+            val price = doc[serviceName] as Double?
+            price?.let {
+                ServicePrice(0, serviceName, price , doc.id  + userEmail)
+            }
+        }
+    }
+
+    private fun parseClinic(doc: DocumentSnapshot): Clinic{
+        return Clinic(
+                doc.id,
+                mAuth.currentUser?.email ?: "default",
+                doc["name"] as String? ?: "placeholder",
+                doc["address"] as String? ?: "placeholder",
+                doc["lat"] as Double? ?: 0.0,
+                doc["lng"] as Double? ?: 0.0,
+        )
     }
 
     class DetailsViewModelFactory(private val filters: List<String>, private val localDBRepository: DatabaseRepository) : ViewModelProvider.Factory {

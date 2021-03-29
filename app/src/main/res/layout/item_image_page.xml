@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/dialogImage"
+    <com.dmytroandriichuk.cmediacal.view.ZoomClass
+        android:id="@+id/zoomableImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true" />

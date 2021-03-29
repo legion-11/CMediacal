@@ -3,8 +3,10 @@ package com.dmytroandriichuk.cmediacal
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.content.res.TypedArray
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -13,17 +15,17 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.dmytroandriichuk.cmediacal.adapter.DetailsListAdapter
-import com.dmytroandriichuk.cmediacal.data.DataHolder
+import com.dmytroandriichuk.cmediacal.adapter.details.DetailsServicesListAdapter
+import com.dmytroandriichuk.cmediacal.data.ClinicListItem
 import com.dmytroandriichuk.cmediacal.dialog.ImagesDialog
-import com.dmytroandriichuk.cmediacal.fragments.search.dialog.model.DialogFilterListItem
+import com.dmytroandriichuk.cmediacal.fragments.search.dialog.filter.FilterDialogListItem
 import com.dmytroandriichuk.cmediacal.viewModel.DetailsViewModel
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class DetailsActivity : AppCompatActivity(), OnMapReadyCallback, DetailsListAdapter.ItemPressListener {
+class DetailsActivity : AppCompatActivity(), OnMapReadyCallback, DetailsServicesListAdapter.ItemPressListener {
 
     private lateinit var mMap: GoogleMap
     private lateinit var latLng: LatLng
@@ -33,7 +35,7 @@ class DetailsActivity : AppCompatActivity(), OnMapReadyCallback, DetailsListAdap
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
-        val clinicData = DataHolder.data!!
+        val clinicData = intent.getParcelableExtra<ClinicListItem>("clinicListItem")!!
         val clinic = clinicData.clinic
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         title = clinic.name
@@ -58,7 +60,7 @@ class DetailsActivity : AppCompatActivity(), OnMapReadyCallback, DetailsListAdap
         val filterResources: TypedArray = resources.obtainTypedArray(R.array.filters_resources)
         val filterItems = Array(titles.size) { i ->
             val arrayId = filterResources.getResourceId(i, 0)
-            DialogFilterListItem(titles[i], resources.getStringArray(arrayId).toList())
+            FilterDialogListItem(titles[i], resources.getStringArray(arrayId).toList())
         }
         filterResources.recycle()
 
@@ -86,7 +88,7 @@ class DetailsActivity : AppCompatActivity(), OnMapReadyCallback, DetailsListAdap
         recyclerView.layoutManager = LinearLayoutManager(this)
         // obtain full clinic data
         detailsViewModel.searchDoc.observe(this, {
-            recyclerView.adapter = DetailsListAdapter(it.servicePrices, this)
+            recyclerView.adapter = DetailsServicesListAdapter(it.servicePrices, this)
         })
         detailsViewModel.getClinicData(id)
 
@@ -104,7 +106,18 @@ class DetailsActivity : AppCompatActivity(), OnMapReadyCallback, DetailsListAdap
             }
         }
 
-        detailsViewModel.imagesRef.observe(this, { buildDialog(it) })
+        detailsViewModel.imagesId.observe(this, { buildDialog(it) })
+
+        val shouldOpenValidationScreen = intent.getBooleanExtra("openValidationScreen", false)
+        Log.d("DetailsActivity", "onCreate: $shouldOpenValidationScreen")
+        if (shouldOpenValidationScreen) {
+            detailsViewModel.searchValidationResult.observe(this, {
+                intent = Intent(this@DetailsActivity, ValidateImageActivity::class.java)
+                intent.putExtra("data", it)
+                startActivity(intent)
+            })
+            detailsViewModel.searchForValidation(this)
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {

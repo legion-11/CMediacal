@@ -1,4 +1,4 @@
-package com.dmytroandriichuk.cmediacal.adapter
+package com.dmytroandriichuk.cmediacal.adapter.details
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dmytroandriichuk.cmediacal.R
 import com.dmytroandriichuk.cmediacal.db.entity.ServicePrice
 
-class DetailsListAdapter(private val dataSet: List<ServicePrice>, private val itemPressListener: ItemPressListener): RecyclerView.Adapter<DetailsListAdapter.ViewHolder>() {
+class DetailsServicesListAdapter(private val dataSet: List<ServicePrice>, private val itemPressListener: ItemPressListener): RecyclerView.Adapter<DetailsServicesListAdapter.ViewHolder>() {
 
     private lateinit var textFormat: String
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {

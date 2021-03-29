@@ -1,4 +1,4 @@
-package com.dmytroandriichuk.cmediacal.fragments.search.dialog
+package com.dmytroandriichuk.cmediacal.fragments.search.dialog.filter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -7,12 +7,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.dmytroandriichuk.cmediacal.R
-import com.dmytroandriichuk.cmediacal.fragments.search.dialog.model.DialogFilterListItem
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 
 //adapter for recycleView for search clinics
-class FilterListDialogAdapter(private val dataSet: List<DialogFilterListItem>,
+class FilterListDialogAdapter(private val dataSet: List<FilterDialogListItem>,
                               private val listener: FilterListDialog.FilterListDialogListener):
     RecyclerView.Adapter<FilterListDialogAdapter.ViewHolder>() {
 
