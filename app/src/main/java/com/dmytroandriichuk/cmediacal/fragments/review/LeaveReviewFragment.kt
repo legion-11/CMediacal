@@ -1,13 +1,18 @@
 package com.dmytroandriichuk.cmediacal.fragments.review
 
+import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.content.ContentResolver
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.TypedArray
+import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.location.Geocoder
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,6 +21,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.core.content.ContextCompat.checkSelfPermission
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,6 +34,7 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.firebase.auth.FirebaseAuth
+import java.io.File
 import java.io.IOException
 import java.util.*
 
@@ -40,16 +48,17 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
     private lateinit var formRecyclerView: RecyclerView
     private lateinit var addressET: EditText
     private lateinit var geocoder: Geocoder
+    private lateinit var fileUri: Uri
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_leave_review, container, false)
         Places.initialize(
-            (activity as LandingActivity).applicationContext,
-            getString(R.string.google_maps_key), Locale.CANADA
+                (activity as LandingActivity).applicationContext,
+                getString(R.string.google_maps_key), Locale.CANADA
         )
         geocoder = Geocoder(activity, Locale.CANADA)
 
@@ -58,20 +67,20 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
         addressET.setText(leaveReviewViewModel.clinicAddress)
         addressET.setOnClickListener {
             val fieldList = listOf(
-                //todo use id as push refference
-                Place.Field.ID,
-                Place.Field.ADDRESS,
-                Place.Field.LAT_LNG,
-                Place.Field.NAME,
-                Place.Field.TYPES,
-                Place.Field.PHONE_NUMBER,
-                //todo check photo
-                Place.Field.PHOTO_METADATAS
+                    //todo use id as push refference
+                    Place.Field.ID,
+                    Place.Field.ADDRESS,
+                    Place.Field.LAT_LNG,
+                    Place.Field.NAME,
+                    Place.Field.TYPES,
+                    Place.Field.PHONE_NUMBER,
+                    //todo check photo
+                    Place.Field.PHOTO_METADATAS
             )
 
             val autocompleteIntent = Autocomplete.IntentBuilder(
-                AutocompleteActivityMode.OVERLAY,
-                fieldList
+                    AutocompleteActivityMode.OVERLAY,
+                    fieldList
             ).setCountry("CA").build(activity as LandingActivity)
             startActivityForResult(autocompleteIntent, PICK_ADDRESS_REQUEST)
         }
@@ -129,7 +138,7 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
             }
         })
 
-        leaveReviewViewModel.message.observe(viewLifecycleOwner, { message->
+        leaveReviewViewModel.message.observe(viewLifecycleOwner, { message ->
             Toast.makeText(context, message, Toast.LENGTH_LONG).show()
         })
 
@@ -171,6 +180,11 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
                 leaveReviewViewModel.clinicId = place?.id
                 leaveReviewViewModel.clinicAddress = place?.address
                 Log.d("TAG", "onActivityResult: ${place?.photoMetadatas?.first()}")
+
+                val a = place?.photoMetadatas?.first()?.attributions
+                Log.d("TAG", "onActivityResult: $a")
+//                val photoRequest = a?.let { FetchPhotoRequest.builder(it) }
+
                 leaveReviewViewModel.clinicData["address"] = place?.address.toString()
                 leaveReviewViewModel.clinicData["name"] = place?.name.toString()
                 leaveReviewViewModel.clinicData["phone"] = place?.phoneNumber.toString()
@@ -184,11 +198,24 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
                     Log.d("TAG", "onActivityResult: ${place.types}")
                 }
 
-            } else {
+            }  else {
                 val message = data?.let { Autocomplete.getStatusFromIntent(it).statusMessage }
-                Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
+                message?.let {
+                    Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
+                }
                 Log.d("TAG", "onActivityResult: $message")
             }
+        } else if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
+            val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                val source = ImageDecoder.createSource(contentResolver, fileUri)
+                ImageDecoder.decodeBitmap(source)
+            } else {
+                MediaStore.Images.Media.getBitmap(contentResolver, fileUri)
+            }
+
+            val newItem = ImagesAdapter.LoadingItem(bitmap, fileUri)
+            addItem(newItem)
+
         }
     }
 
@@ -203,9 +230,40 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
         showFileChooser()
     }
 
+    override fun addFromCameraItem() {
+        context?.let {
+            if (checkSelfPermission(it, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_CODE)
+            } else {
+                val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                val storageDir = activity?.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+                val file = File.createTempFile(System.currentTimeMillis().toString(), ".jpg", storageDir)
+                context?.let {
+                    fileUri = FileProvider.getUriForFile(it, "com.dmytroandriichuk.cmediacal.fileprovider", file)
+                }
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri)
+                startActivityForResult(cameraIntent, CAMERA_REQUEST)
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == CAMERA_PERMISSION_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(context, "camera permission granted", Toast.LENGTH_LONG).show()
+                val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                startActivityForResult(cameraIntent, CAMERA_REQUEST)
+            } else {
+                Toast.makeText(context, "camera permission denied", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
     private fun addItem(newItem: ImagesAdapter.LoadingItem) {
         leaveReviewViewModel.loadingItems.add(newItem)
         (loadingRecyclerView.adapter as ImagesAdapter).addItem()
+        Log.d("TAG", "addItem: ${leaveReviewViewModel.loadingItems.size}")
     }
 
     override fun removeFormItem(position: Int) {
@@ -238,5 +296,7 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
         )
         const val PICK_IMAGE_REQUEST = 100
         const val PICK_ADDRESS_REQUEST = 200
+        const val CAMERA_REQUEST = 300
+        const val CAMERA_PERMISSION_CODE = 301;
     }
 }

@@ -10,19 +10,11 @@
         android:id="@+id/addFromGalery"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:tint="#08800E"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/addFromCameraBtn"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_galery" />
-
-    <ImageButton
-        android:id="@+id/addFromCameraBtn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/addFromGalery"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_camera" />
+        app:srcCompat="@drawable/ic_add" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

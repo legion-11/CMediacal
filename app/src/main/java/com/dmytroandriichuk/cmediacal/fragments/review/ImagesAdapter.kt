@@ -53,6 +53,9 @@ class ImagesAdapter(private var dataSet: MutableList<LoadingItem>, private val d
             (holder as ViewHolderAdd).addBtn.setOnClickListener {
                 deleteItemListener.addImageItem()
             }
+            holder.addFromCameraBtn.setOnClickListener {
+                deleteItemListener.addFromCameraItem()
+            }
         }
     }
 
@@ -68,12 +71,14 @@ class ImagesAdapter(private var dataSet: MutableList<LoadingItem>, private val d
     }
 
     class ViewHolderAdd(val view: View) : BaseViewHolder(view) {
-        val addBtn: ImageButton = view.findViewById(R.id.addBtn)
+        val addBtn: ImageButton = view.findViewById(R.id.addFromGalery)
+        val addFromCameraBtn: ImageButton = view.findViewById(R.id.addFromCameraBtn)
     }
 
     interface DeleteItemListener {
         fun removeImageItem(position: Int)
         fun addImageItem()
+        fun addFromCameraItem()
     }
 
     class LoadingItem(val bitmap: Bitmap, val uri: Uri, var progress: Int = 0)

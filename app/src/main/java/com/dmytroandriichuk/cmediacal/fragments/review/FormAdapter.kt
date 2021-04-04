@@ -24,7 +24,7 @@ class FormAdapter(private var dataSet: MutableList<FormItem>,
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         return if (viewType == 0) {
-            val view = LayoutInflater.from(parent.context).inflate( R.layout.add_image, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate( R.layout.add_form_item, parent, false)
             ViewHolderAdd(view)
         } else {
             val view = LayoutInflater.from(parent.context).inflate( R.layout.form_item, parent, false)
@@ -118,7 +118,7 @@ class FormAdapter(private var dataSet: MutableList<FormItem>,
     }
 
     class ViewHolderAdd(val view: View) : BaseViewHolder(view) {
-        val addBtn: ImageButton = view.findViewById(R.id.addBtn)
+        val addBtn: ImageButton = view.findViewById(R.id.addFromGalery)
     }
 
     inner class CustomTextWatcher: TextWatcher {
