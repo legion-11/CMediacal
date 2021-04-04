@@ -1,6 +1,5 @@
 package com.dmytroandriichuk.cmediacal.fragments.review
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -44,8 +43,8 @@ class LeaveReviewViewModel : ViewModel() {
                             .addOnSuccessListener { docRef ->
                                 loadAllImagesOnFirebaseStorage(docRef)
                             }
-                            .addOnFailureListener { setMessage(it.message) }
-                }.addOnFailureListener { setMessage(it.message) }
+                            .addOnFailureListener { err1 -> setMessage(err1.message) }
+                }.addOnFailureListener { err2 -> setMessage(err2.message) }
         } ?: run {
             setMessage("This clinic is impossible to add")
         }

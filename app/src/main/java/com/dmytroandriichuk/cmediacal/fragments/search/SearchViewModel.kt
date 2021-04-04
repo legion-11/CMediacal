@@ -91,7 +91,9 @@ class SearchViewModel(private val localDBRepository: DatabaseRepository) : ViewM
             val services = filters.map {
                 ServicePrice(0, it, doc[it] as Double, clinic.crossRefId)
             }
-            ClinicListItem(clinic, services, bookmarked = clinic.id in  bookmarksID)
+            val defaultImageUrl = doc["defaultImageUrl"] as String? ?: "https://therichmonddentalcentre.com/wp-content/uploads/2016/07/IMG_9025.jpg"
+
+            ClinicListItem(clinic, services, bookmarked = clinic.id in  bookmarksID, imageURL = defaultImageUrl)
         } as ArrayList
     }
 
