@@ -36,9 +36,10 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
     private lateinit var passwordLayout: TextInputLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_CMediacal)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
         mAuth = FirebaseAuth.getInstance()
+        checkIfSignedIn()
 
         //provides auth with google
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -47,6 +48,7 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
                 .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
+        setContentView(R.layout.activity_main)
         emailET = findViewById(R.id.emailET)
         passwordET = findViewById(R.id.passwordET)
         progressBar = findViewById(R.id.log_in_progress_bar)
@@ -75,16 +77,13 @@ class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
     }
 
     //check if user is authenticated and redirect him if one is
-    override fun onStart() {
-        super.onStart()
+    fun checkIfSignedIn() {
         val user = mAuth.currentUser
         if (user != null && user.isEmailVerified) {
             Log.d("auth", "onStart: user ${user.email} registered")
 
             intent = Intent(this@MainActivity, LandingActivity::class.java)
             startActivity(intent)
-        } else {
-            Log.d("auth", "onStart: user not registered")
         }
     }
 
