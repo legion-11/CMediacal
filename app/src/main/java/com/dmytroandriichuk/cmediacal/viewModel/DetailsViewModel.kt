@@ -72,6 +72,7 @@ class DetailsViewModel(private val filters: List<String>, private val localDBRep
             .get()
             .addOnSuccessListener { docsImages ->
                 val size = docsImages.documents.size
+                if (size == 0) { return@addOnSuccessListener }
                 val chosenDoc = docsImages.documents[random.nextInt(size)]
                 val services = parseAllServices(chosenDoc)
                 //load clinic data

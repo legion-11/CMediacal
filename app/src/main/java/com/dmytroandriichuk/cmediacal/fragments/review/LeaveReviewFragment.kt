@@ -204,7 +204,6 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
 
             val newItem = ImagesAdapter.LoadingItem(bitmap, fileUri)
             addItem(newItem)
-
         }
     }
 
