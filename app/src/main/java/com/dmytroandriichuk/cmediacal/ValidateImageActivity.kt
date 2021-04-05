@@ -15,6 +15,8 @@ import com.dmytroandriichuk.cmediacal.data.ClinicListItem
 import com.dmytroandriichuk.cmediacal.data.DataHolder
 import com.dmytroandriichuk.cmediacal.data.ValidationData
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.functions.ktx.functions
@@ -47,6 +49,10 @@ class ValidateImageActivity : AppCompatActivity(), ValidateViewPagerAdapter.OnIm
         val array = data?.images ?: emptyArray()
 
         viewPager2.adapter = ValidateViewPagerAdapter(array, this)
+        val tabLayout = findViewById<TabLayout>(R.id.tabDots)
+        TabLayoutMediator(tabLayout, viewPager2) { _, position ->
+            viewPager2.setCurrentItem(0, false)
+        }.attach()
 
         findViewById<Button>(R.id.trueButton).setOnClickListener {
             Log.d("ValidateImageActivity", "onCreate: press yes")

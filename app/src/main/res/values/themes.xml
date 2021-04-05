@@ -28,6 +28,7 @@
         <item name="android:orientation">vertical</item>
     </style>
 
+    <color name="colorTabAccent">@color/purple_400</color>
     <color name="colorTextInputOutlineDefaultColor">@color/dark_grey</color>
     <color name="colorTextInputOutlineSelectedColor">@color/purple_400</color>
     <color name="colorDivider">@color/black</color>

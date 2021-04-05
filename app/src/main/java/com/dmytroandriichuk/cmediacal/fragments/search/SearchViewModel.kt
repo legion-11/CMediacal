@@ -89,7 +89,7 @@ class SearchViewModel(private val localDBRepository: DatabaseRepository) : ViewM
                     doc["phone"] as String? ?: "No phone",
                     )
             val services = filters.map {
-                ServicePrice(0, it, doc[it] as Double, clinic.crossRefId)
+                ServicePrice(0, it, doc[it].toString().toDouble(), clinic.crossRefId)
             }
             val defaultImageUrl = doc["defaultImageUrl"] as String? ?: "https://therichmonddentalcentre.com/wp-content/uploads/2016/07/IMG_9025.jpg"
 

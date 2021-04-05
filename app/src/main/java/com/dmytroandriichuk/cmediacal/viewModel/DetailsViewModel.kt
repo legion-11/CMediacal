@@ -112,7 +112,7 @@ class DetailsViewModel(private val filters: List<String>, private val localDBRep
     private fun parseAllServices(doc: DocumentSnapshot): List<ServicePrice>{
         return filters.mapNotNull { serviceName ->
             val userEmail = mAuth.currentUser?.email ?: "default"
-            val price = doc[serviceName] as Double?
+            val price = doc[serviceName].toString().toDoubleOrNull()
             price?.let {
                 ServicePrice(0, serviceName, price , doc.id  + userEmail)
             }

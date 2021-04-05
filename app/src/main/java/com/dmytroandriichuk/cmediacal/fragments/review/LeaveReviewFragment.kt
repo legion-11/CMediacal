@@ -126,6 +126,7 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
 
             imagesData["clinic_id"] = leaveReviewViewModel.clinicId!!
             imagesData["validated"] = false
+            imagesData["date"] = Date().time
             imagesData["userId"] = FirebaseAuth.getInstance().currentUser!!.uid
             leaveReviewViewModel.putFiles(imagesData)
         }
