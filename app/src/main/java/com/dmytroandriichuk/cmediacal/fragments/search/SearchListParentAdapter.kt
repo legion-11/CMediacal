@@ -9,17 +9,23 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.RecycledViewPool
 import com.dmytroandriichuk.cmediacal.R
-import com.dmytroandriichuk.cmediacal.fragments.common.ClinicListChildAdapter
 import com.dmytroandriichuk.cmediacal.data.ClinicListItem
+import com.dmytroandriichuk.cmediacal.fragments.common.ClinicListChildAdapter
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.squareup.picasso.Picasso
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FetchPhotoRequest
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.libraries.places.api.net.PlacesClient
 import java.util.*
 import kotlin.collections.ArrayList
 
+
 //first adapter for the recycleView with nested items
-class SearchListParentAdapter(dataSet: ArrayList<ClinicListItem>, private val itemClickListener: ItemClickListener):
+class SearchListParentAdapter(dataSet: ArrayList<ClinicListItem>,
+                              private val itemClickListener: ItemClickListener,
+                              private val placesClient: PlacesClient):
     RecyclerView.Adapter<SearchListParentAdapter.ViewHolder>(),
     Filterable {
     private var dataSetFull = ArrayList(dataSet.sortedWith(compareBy({ it.totalPrice }, { it.clinic.name })))
@@ -31,6 +37,7 @@ class SearchListParentAdapter(dataSet: ArrayList<ClinicListItem>, private val it
     // between the child and
     // the parent RecyclerViews
     private val viewPool = RecycledViewPool()
+
 
     fun changeDataSet(dataSet: ArrayList<ClinicListItem>){
         dataSetFull = ArrayList(dataSet.sortedWith(compareBy({ it.totalPrice }, { it.clinic.name })))
@@ -58,7 +65,26 @@ class SearchListParentAdapter(dataSet: ArrayList<ClinicListItem>, private val it
         holder.nameTV.text = item.clinic.name
         holder.addressTV.text = item.clinic.address
 
-        Picasso.get().load(item.imageURL).resize(80, 80).centerCrop().into(holder.image)
+        val placeRequest = FetchPlaceRequest.builder(item.clinic.id, listOf(Place.Field.PHOTO_METADATAS)).build()
+        placesClient.fetchPlace(placeRequest).addOnSuccessListener { response ->
+            val metadata = response.place.photoMetadatas?.first()
+            metadata?.let {
+                val photoRequest = FetchPhotoRequest.builder(it)
+                        .setMaxWidth(100)
+                        .setMaxHeight(100)
+                        .build()
+                placesClient.fetchPhoto(photoRequest).addOnSuccessListener { fetchPhotoResponse ->
+                    val bitmap = fetchPhotoResponse.bitmap
+                    holder.image.setImageBitmap(bitmap)
+                }.addOnFailureListener {
+                    holder.image.setImageResource(R.drawable.clinic_default_image)
+                }
+            }
+        }.addOnFailureListener {
+            holder.image.setImageResource(R.drawable.clinic_default_image)
+        }
+
+
         holder.totalPrice.text = if (item.totalPrice != 0.0) textFormat.format(item.totalPrice) else ""
         holder.totalPriceHeader.text = if (item.totalPrice != 0.0) totalPriceHeaderText else ""
 

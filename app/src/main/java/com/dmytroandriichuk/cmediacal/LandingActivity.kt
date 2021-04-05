@@ -12,7 +12,10 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.dmytroandriichuk.cmediacal.MainActivity.Companion.isOnline
 import com.dmytroandriichuk.cmediacal.data.ClinicListItem
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.firebase.auth.FirebaseAuth
+import java.util.*
 import kotlin.system.exitProcess
 
 class LandingActivity : AppCompatActivity() {
@@ -21,11 +24,16 @@ class LandingActivity : AppCompatActivity() {
     private var startTime: Long = 0
     private var counter: Int = 0
     private lateinit var  sharedPreferences: SharedPreferences
+    lateinit var placesClient: PlacesClient
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_landing)
         mAuth = FirebaseAuth.getInstance()
-
+        Places.initialize(
+                applicationContext,
+                getString(R.string.google_maps_key), Locale.CANADA
+        )
+        placesClient = Places.createClient(this)
         sharedPreferences = getSharedPreferences("user default", Context.MODE_PRIVATE)
         counter = sharedPreferences.getInt("counter", 0)
 

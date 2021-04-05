@@ -48,7 +48,7 @@ class DetailsActivity : AppCompatActivity(), OnMapReadyCallback, DetailsServices
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        //TODO change placeholder
+
         findViewById<TextView>(R.id.details_clinic_phone).text = clinic.phone
         val address = findViewById<TextView>(R.id.details_clinic_address)
         address.text = clinic.address

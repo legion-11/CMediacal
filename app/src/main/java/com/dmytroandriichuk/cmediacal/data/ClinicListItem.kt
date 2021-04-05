@@ -9,7 +9,6 @@ import com.dmytroandriichuk.cmediacal.db.entity.ServicePrice
 data class ClinicListItem(
         val clinic: Clinic,
         val servicePrices: List<ServicePrice>,
-        val imageURL: String = "https://therichmonddentalcentre.com/wp-content/uploads/2016/07/IMG_9025.jpg",
         var expanded: Boolean = false,
         var bookmarked: Boolean = false
 ): Parcelable {
@@ -23,7 +22,6 @@ data class ClinicListItem(
     constructor(parcel: Parcel) : this(
             parcel.readParcelable(Clinic::class.java.classLoader)!!,
             parcel.createTypedArrayList(ServicePrice)!!,
-            parcel.readString()!!,
             parcel.readByte() != 0.toByte(),
             parcel.readByte() != 0.toByte()) {
         totalPrice = parcel.readDouble()
@@ -38,7 +36,6 @@ data class ClinicListItem(
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeParcelable(clinic, flags)
         parcel.writeTypedList(servicePrices)
-        parcel.writeString(imageURL)
         parcel.writeByte(if (expanded) 1 else 0)
         parcel.writeByte(if (bookmarked) 1 else 0)
         parcel.writeDouble(totalPrice)

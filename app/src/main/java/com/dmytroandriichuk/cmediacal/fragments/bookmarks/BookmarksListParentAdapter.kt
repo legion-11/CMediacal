@@ -14,15 +14,20 @@ import com.dmytroandriichuk.cmediacal.data.ClinicListItem
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.squareup.picasso.Picasso
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FetchPhotoRequest
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.libraries.places.api.net.PlacesClient
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
 //first adapter for the recycleView with nested items
-class ClinicListParentAdapter(dataSet: ArrayList<ClinicListItem>, private val itemClickListener: ItemClickListener):
-    RecyclerView.Adapter<ClinicListParentAdapter.ViewHolder>() {
+class BookmarksListParentAdapter(dataSet: ArrayList<ClinicListItem>,
+                                 private val itemClickListener: ItemClickListener,
+                                 private val placesClient: PlacesClient):
+    RecyclerView.Adapter<BookmarksListParentAdapter.ViewHolder>() {
     private var dataSetFull = ArrayList(dataSet.sortedByDescending { it.clinic.date })
     private lateinit var textFormat: String
     private lateinit var totalPriceHeaderText: String
@@ -68,8 +73,26 @@ class ClinicListParentAdapter(dataSet: ArrayList<ClinicListItem>, private val it
         }
         holder.nameTV.text = item.clinic.name
         holder.addressTV.text = item.clinic.address
-        //TODO change to image
-        Picasso.get().load("https://therichmonddentalcentre.com/wp-content/uploads/2016/07/IMG_9025.jpg").resize(80, 80).centerCrop().into(holder.image)
+
+        val placeRequest = FetchPlaceRequest.builder(item.clinic.id, listOf(Place.Field.PHOTO_METADATAS)).build()
+        placesClient.fetchPlace(placeRequest).addOnSuccessListener { response ->
+            val metadata = response.place.photoMetadatas?.first()
+            metadata?.let {
+                val photoRequest = FetchPhotoRequest.builder(it)
+                        .setMaxWidth(100)
+                        .setMaxHeight(100)
+                        .build()
+                placesClient.fetchPhoto(photoRequest).addOnSuccessListener { fetchPhotoResponse ->
+                    val bitmap = fetchPhotoResponse.bitmap
+                    holder.image.setImageBitmap(bitmap)
+                }.addOnFailureListener {
+                    holder.image.setImageResource(R.drawable.clinic_default_image)
+                }
+            }
+        }.addOnFailureListener {
+            holder.image.setImageResource(R.drawable.clinic_default_image)
+        }
+
         holder.totalPrice.text = if (item.totalPrice != 0.0) textFormat.format(item.totalPrice) else ""
         holder.totalPriceHeader.text = if (item.totalPrice != 0.0) totalPriceHeaderText else ""
 

@@ -19,6 +19,7 @@ import com.dmytroandriichuk.cmediacal.db.entity.ServicePrice
 import com.dmytroandriichuk.cmediacal.fragments.search.dialog.filter.FilterListDialog
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.libraries.places.api.Places
 import com.google.firebase.auth.FirebaseAuth
 
 
@@ -31,7 +32,6 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
         SearchViewModel.SearchViewModelFactory((activity?.application as CMedicalApplication).repository)
     }
 
-    val adapter = SearchListParentAdapter(ArrayList(), this)
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -47,6 +47,7 @@ class SearchFragment : Fragment(), FilterListDialog.FilterListDialogListener, Se
         //replace toolbar back button icon with our icon
         mToolbar.setNavigationIcon(R.drawable.ic_log_out)
 
+        val adapter = SearchListParentAdapter(ArrayList(), this, (activity as LandingActivity).placesClient)
 
         recyclerView = root.findViewById<RecyclerView>(R.id.searchListRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(activity)

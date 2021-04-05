@@ -24,7 +24,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 
 //screen for log in
-//TODO make splash screen
 class MainActivity : AppCompatActivity(), OfflineDialog.OfflineDialogListener {
     private lateinit var mAuth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient

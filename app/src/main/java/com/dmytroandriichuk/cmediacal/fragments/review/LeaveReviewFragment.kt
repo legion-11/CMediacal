@@ -29,7 +29,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dmytroandriichuk.cmediacal.LandingActivity
 import com.dmytroandriichuk.cmediacal.R
-import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
@@ -56,10 +55,7 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
             savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_leave_review, container, false)
-        Places.initialize(
-                (activity as LandingActivity).applicationContext,
-                getString(R.string.google_maps_key), Locale.CANADA
-        )
+
         geocoder = Geocoder(activity, Locale.CANADA)
 
         // when you click on addressET it will invoke intent to find place with google autocomplete
@@ -67,15 +63,12 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
         addressET.setText(leaveReviewViewModel.clinicAddress)
         addressET.setOnClickListener {
             val fieldList = listOf(
-                    //todo use id as push refference
                     Place.Field.ID,
                     Place.Field.ADDRESS,
                     Place.Field.LAT_LNG,
                     Place.Field.NAME,
                     Place.Field.TYPES,
                     Place.Field.PHONE_NUMBER,
-                    //todo check photo
-                    Place.Field.PHOTO_METADATAS
             )
 
             val autocompleteIntent = Autocomplete.IntentBuilder(
@@ -180,11 +173,6 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
                 addressET.setText(place?.address)
                 leaveReviewViewModel.clinicId = place?.id
                 leaveReviewViewModel.clinicAddress = place?.address
-                Log.d("TAG", "onActivityResult: ${place?.photoMetadatas?.first()}")
-
-                val a = place?.photoMetadatas?.first()?.attributions
-                Log.d("TAG", "onActivityResult: $a")
-//                val photoRequest = a?.let { FetchPhotoRequest.builder(it) }
 
                 leaveReviewViewModel.clinicData["address"] = place?.address.toString()
                 leaveReviewViewModel.clinicData["name"] = place?.name.toString()
@@ -292,6 +280,7 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
                 "Ontario" to "ON",
                 "Prince Edward Island" to "PE",
                 "Quebec" to "QC",
+                "Québec" to "QC",
                 "Saskatchewan" to "SK",
                 "Yukon Territory" to "YT",
         )
