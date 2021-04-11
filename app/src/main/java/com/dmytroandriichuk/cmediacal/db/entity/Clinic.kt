@@ -17,6 +17,7 @@ data class Clinic (val id: String,
                    val lng: Double = 0.0,
                    val phone: String = "",
                    val date : Long = Date().time,
+                   // foreign key for services
                    @PrimaryKey val crossRefId: String = id + userEmail,
 ): Parcelable {
     constructor(parcel: Parcel) : this(

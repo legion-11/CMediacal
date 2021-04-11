@@ -12,6 +12,7 @@ import androidx.annotation.Nullable
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.viewpager2.widget.ViewPager2
 
+// image view with zoom
 class ZoomClass : AppCompatImageView, View.OnTouchListener,
         GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
     //shared constructing

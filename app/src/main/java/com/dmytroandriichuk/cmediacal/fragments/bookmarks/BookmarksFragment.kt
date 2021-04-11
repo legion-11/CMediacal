@@ -14,6 +14,7 @@ import com.dmytroandriichuk.cmediacal.R
 import com.dmytroandriichuk.cmediacal.data.ClinicListItem
 import com.google.android.material.snackbar.Snackbar
 
+// fragment that shows all clinics in our database ordered by date
 class BookmarksFragment : Fragment(), BookmarksListParentAdapter.ItemClickListener {
 
     private val bookmarksViewModel: BookmarksViewModel by viewModels {
@@ -36,10 +37,12 @@ class BookmarksFragment : Fragment(), BookmarksListParentAdapter.ItemClickListen
         return root
     }
 
+    // return bookmark to db if we deleted it accidentally
     override fun addBookmark(item: ClinicListItem) {
         bookmarksViewModel.insert(item.clinic)
     }
 
+    // remove bookmark from db
     override fun removeBookmark(item: ClinicListItem) {
         bookmarksViewModel.delete(item.clinic)
         this.view?.let {

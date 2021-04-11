@@ -8,7 +8,7 @@ import androidx.annotation.NonNull
 import androidx.fragment.app.DialogFragment
 import java.lang.ClassCastException
 
-//message about errors and allowing to check orders from local db
+//display information and errors for user
 class OfflineDialog(private val message: String): DialogFragment() {
 
     private lateinit var dialogListener: OfflineDialogListener

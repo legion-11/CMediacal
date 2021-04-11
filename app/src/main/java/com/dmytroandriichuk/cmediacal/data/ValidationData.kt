@@ -3,9 +3,9 @@ package com.dmytroandriichuk.cmediacal.data
 import android.graphics.Bitmap
 
 data class ValidationData(
-        val id: String,
-        val clinicListItem: ClinicListItem,
-        val images: Array<Bitmap>
+        val id: String, // id of the image
+        val clinicListItem: ClinicListItem, // clinic and services that will be validated
+        val images: Array<Bitmap> // images for checking
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

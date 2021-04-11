@@ -9,6 +9,7 @@ import com.dmytroandriichuk.cmediacal.R
 import com.dmytroandriichuk.cmediacal.db.entity.ServicePrice
 
 //adapter for nester recycleView
+// each item contains service and its price
 class ClinicListChildAdapter(private val dataSet: List<ServicePrice>): RecyclerView.Adapter<ClinicListChildAdapter.ViewHolder>() {
 
     private lateinit var textFormat: String

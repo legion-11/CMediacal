@@ -10,6 +10,8 @@ import androidx.viewpager2.widget.ViewPager2
 import com.dmytroandriichuk.cmediacal.R
 import com.dmytroandriichuk.cmediacal.adapter.details.ViewPagerParentAdapter
 
+// provide dialog that shows viewPager with images of services
+// imagesId list of images id from firebase storage
 class ImagesDialog(private val imagesId: List<String>): AppCompatDialogFragment(){
 
     private lateinit var viewPager2: ViewPager2

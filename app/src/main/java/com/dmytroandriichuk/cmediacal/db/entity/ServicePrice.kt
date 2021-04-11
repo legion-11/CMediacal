@@ -4,6 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import androidx.room.*
 
+//if clinic will be deleted services will be deleted automatically
 @Entity(
     foreignKeys = [ForeignKey(
         entity = Clinic::class,
@@ -17,7 +18,7 @@ data class ServicePrice(
     val serviceName: String,
     val price: Double,
     @ColumnInfo(index = true)
-    val crossRefServiceId: String
+    val crossRefServiceId: String // primary key of clinic
 ): Parcelable{
     constructor(parcel: Parcel) : this(
             parcel.readLong(),

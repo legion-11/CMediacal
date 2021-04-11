@@ -63,6 +63,8 @@ class BookmarksListParentAdapter(dataSet: ArrayList<ClinicListItem>,
         val item = dataSetFull[position]
         val date = Date(item.clinic.date)
         val datePreviousItem = if (position != 0) Date(dataSetFull[position-1].clinic.date) else Date(0)
+
+        //show date if it is different to previous item
         if (dateFormat.format(datePreviousItem) == dateFormat.format(date)){
             holder.dateTV.visibility = View.GONE
             holder.dividerTop.visibility = View.GONE
@@ -74,6 +76,7 @@ class BookmarksListParentAdapter(dataSet: ArrayList<ClinicListItem>,
         holder.nameTV.text = item.clinic.name
         holder.addressTV.text = item.clinic.address
 
+        // get image of place by id
         val placeRequest = FetchPlaceRequest.builder(item.clinic.id, listOf(Place.Field.PHOTO_METADATAS)).build()
         placesClient.fetchPlace(placeRequest).addOnSuccessListener { response ->
             val metadata = response.place.photoMetadatas?.first()

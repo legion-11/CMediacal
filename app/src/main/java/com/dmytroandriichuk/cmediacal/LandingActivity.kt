@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth
 import java.util.*
 import kotlin.system.exitProcess
 
+// initial activity, contains 3 fragments
 class LandingActivity : AppCompatActivity() {
 
     lateinit var mAuth: FirebaseAuth

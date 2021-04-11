@@ -194,6 +194,7 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
                 }
                 Log.d("TAG", "onActivityResult: $message")
             }
+        // request to camera app
         } else if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
             val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 val source = ImageDecoder.createSource(contentResolver, fileUri)
@@ -266,7 +267,6 @@ class LeaveReviewFragment : Fragment(), ImagesAdapter.DeleteItemListener, FormAd
     }
 
     companion object {
-        // todo check states
         val STATES = hashMapOf(
                 "Alberta" to "AB",
                 "British Columbia" to "BC",

@@ -26,6 +26,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
+//activity that provides details about selected clinic
 class DetailsActivity : AppCompatActivity(), OnMapReadyCallback, DetailsServicesListAdapter.ItemPressListener {
 
     private lateinit var mMap: GoogleMap

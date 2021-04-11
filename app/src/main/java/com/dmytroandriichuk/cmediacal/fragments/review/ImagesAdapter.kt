@@ -9,7 +9,7 @@ import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.dmytroandriichuk.cmediacal.R
 
-//first adapter for the recycleView with nested items
+//adapter for images and it's upload progress
 class ImagesAdapter(private var dataSet: MutableList<LoadingItem>, private val deleteItemListener: DeleteItemListener):
     RecyclerView.Adapter<ImagesAdapter.BaseViewHolder>() {
 

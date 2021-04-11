@@ -6,10 +6,11 @@ import com.dmytroandriichuk.cmediacal.db.entity.Clinic
 import com.dmytroandriichuk.cmediacal.db.entity.ClinicAndServicePrices
 import com.dmytroandriichuk.cmediacal.db.entity.ServicePrice
 
+// common class for clinic and services obtained from db and firebase query
 data class ClinicListItem(
         val clinic: Clinic,
         val servicePrices: List<ServicePrice>,
-        var expanded: Boolean = false,
+        var expanded: Boolean = false, // show map and services
         var bookmarked: Boolean = false
 ): Parcelable {
     constructor(clinicAndServicePrices: ClinicAndServicePrices,

@@ -12,6 +12,9 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 
 
+// adapter that contains viewPager of viewPagers
+// since one image id can contain many images
+// child viewPager contains all images of the same image id
 class ViewPagerParentAdapter(private val imagesId: List<String>, private val context: Context) : RecyclerView.Adapter<ViewPagerParentAdapter.ViewHolder>() {
 
     private var imageRef = Firebase.storage.reference.child("Images")

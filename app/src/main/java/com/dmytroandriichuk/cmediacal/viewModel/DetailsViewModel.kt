@@ -44,6 +44,7 @@ class DetailsViewModel(private val filters: List<String>, private val localDBRep
         localDBRepository.delete(clinic)
     }
 
+    // get clinic by id
     fun getClinicData(id: String){
         firebaseFirestoreDB.collection("Dental Clinics").document(id).get()
                 .addOnSuccessListener { doc ->
@@ -53,6 +54,7 @@ class DetailsViewModel(private val filters: List<String>, private val localDBRep
                 }
     }
 
+    // get all images id that have information about service we need
     fun getImages(tag: String, id: String) {
         firestoreImagesRef
                 .whereEqualTo("validated", true)
@@ -72,6 +74,7 @@ class DetailsViewModel(private val filters: List<String>, private val localDBRep
             .get()
             .addOnSuccessListener { docsImages ->
                 val size = docsImages.documents.size
+                // if no images for validation
                 if (size == 0) { return@addOnSuccessListener }
                 val chosenDoc = docsImages.documents[random.nextInt(size)]
                 val services = parseAllServices(chosenDoc)
@@ -110,6 +113,7 @@ class DetailsViewModel(private val filters: List<String>, private val localDBRep
             }
     }
 
+    //parsing all services from dataSnapshot and create list of ServicePrice instances
     private fun parseAllServices(doc: DocumentSnapshot): List<ServicePrice>{
         return filters.mapNotNull { serviceName ->
             val userEmail = mAuth.currentUser?.email ?: "default"
@@ -120,6 +124,7 @@ class DetailsViewModel(private val filters: List<String>, private val localDBRep
         }
     }
 
+    //parsing  dataSnapshot and create Clinic instance
     private fun parseClinic(doc: DocumentSnapshot): Clinic{
         return Clinic(
                 doc.id,

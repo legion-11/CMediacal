@@ -8,6 +8,7 @@ import com.google.firebase.auth.FirebaseAuth
 
 class BookmarksViewModel(private val localDBRepository: DatabaseRepository) : ViewModel() {
     private val mAuth = FirebaseAuth.getInstance()
+    // live data of clinics in db
     val bookmarks: LiveData<Array<ClinicAndServicePrices>> = localDBRepository.getAllClinicsWithPrices(getUser()).asLiveData()
 
     private fun getUser(): String {

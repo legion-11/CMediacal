@@ -12,6 +12,7 @@ import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.dmytroandriichuk.cmediacal.R
 
+// adapter for recyclerView where user can insert service and it's price
 class FormAdapter(private var dataSet: MutableList<FormItem>,
                   private var spinnerSelector: Map<String, List<String>>,
                   private val changeDataSetListener: ChangeDataSetListener):
@@ -44,7 +45,7 @@ class FormAdapter(private var dataSet: MutableList<FormItem>,
             val categoryName = holder.formCategorySpinner.selectedItem as String
             createAdapters(holder.formSubcategorySpinner, spinnerSelector[categoryName]!!.toList(), holder.view.context, item.positionSubcategory)
 
-
+            // when user selects category subcategory automaticall updates
             holder.formCategorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
                     dataSet[position].positionCategory = pos
@@ -129,6 +130,7 @@ class FormAdapter(private var dataSet: MutableList<FormItem>,
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
 
+        // formate user input to <$ 0.00> form
         override fun afterTextChanged(s: Editable) {
             Log.d("TAG", "afterTextChanged: 11111")
             if (_ignore) { return }
